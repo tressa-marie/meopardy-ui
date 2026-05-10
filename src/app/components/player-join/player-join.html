@@ -1,0 +1,32 @@
+<main class="player-join-screen">
+  <section class="join-panel">
+    <h1>{{ gameTitle }}</h1>
+
+    <label class="join-label" for="join-code">Join Code</label>
+    <input
+      id="join-code"
+      class="join-input"
+      type="text"
+      inputmode="numeric"
+      autocomplete="one-time-code"
+      maxlength="6"
+      placeholder="123456"
+      [value]="joinCode"
+      (input)="onJoinCodeInput($event)" />
+
+    <label class="join-label" for="player-name">Player Name</label>
+      <input
+      id="player-name"
+      class="join-input"
+      type="text"
+      inputmode="text"
+      autocomplete="name"
+      maxlength="20"
+      [value]="playerName"
+      (input)="onPlayerNameInput($event)" />
+
+    <button type="button" class="join-button" (click)="joinGame()">
+      Join
+    </button>
+  </section>
+</main>

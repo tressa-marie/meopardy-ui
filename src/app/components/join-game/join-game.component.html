@@ -1,0 +1,19 @@
+@if (loading) {
+  <p>Loading game...</p>
+}
+
+@if (errorMessage) {
+  <p class="error">{{ errorMessage }}</p>
+}
+
+@if (joinCode) {
+  <main class="join-screen">
+    <p class="eyebrow">Join the game</p>
+    <h1>Meopardy</h1>
+    <section class="join-card" aria-label="Join code">
+      <p class="label">Join Code</p>
+      <p class="code">{{ joinCode }}</p>
+    </section>
+    <a class="start-button" routerLink="/host">Start Game</a>
+  </main>
+}

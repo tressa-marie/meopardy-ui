@@ -1,0 +1,92 @@
+.game-board {
+  min-height: 100vh;
+  padding: 2rem;
+  background: #071a44;
+  color: white;
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.75rem;
+  max-width: 1400px;
+  margin: 2rem auto;
+}
+
+.category-column {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.category-header {
+  min-height: 90px;
+  padding: 1rem;
+  display: grid;
+  place-items: center;
+  background: #11327a;
+  border: 3px solid #d6b15d;
+  font-size: 1.25rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.clue-tile {
+  min-height: 110px;
+  background: #11327a;
+  border: 3px solid #d6b15d;
+  color: #ffd76a;
+  font-size: 2.25rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.clue-tile:hover:not(:disabled) {
+  transform: scale(1.03);
+}
+
+.clue-tile.answered {
+  background: #071a44;
+  color: transparent;
+  cursor: default;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+}
+
+.clue-modal {
+  max-width: 900px;
+  width: 100%;
+  background: #11327a;
+  border: 4px solid #d6b15d;
+  padding: 3rem;
+  color: white;
+  text-align: center;
+}
+
+.clue-value {
+  color: #ffd76a;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.clue-modal h2 {
+  font-size: 2.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.error {
+  color: red;
+}

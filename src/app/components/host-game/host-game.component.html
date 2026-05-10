@@ -1,0 +1,56 @@
+@if (loading) {
+  <p>Loading game board...</p>
+}
+
+@if (errorMessage) {
+  <p class="error">{{ errorMessage }}</p>
+}
+
+@if (board) {
+  <main class="game-board">
+    <h1>{{ board.title }}</h1>
+
+    <section class="grid">
+      @for (category of board.categories; track category.id) {
+        <div class="category-column">
+          <div class="category-header">
+            {{ category.name }}
+          </div>
+
+          @for (clue of category.clues; track clue.id) {
+            <button
+              class="clue-tile"
+              [class.answered]="clue.isAnswered"
+              [disabled]="clue.isAnswered"
+              (click)="selectClue(clue)">
+              @if (!clue.isAnswered) {
+                ${{ clue.basePoints }}
+              } @else {
+                answered
+              }
+            </button>
+          }
+        </div>
+      }
+    </section>
+  </main>
+}
+
+@if (selectedClue) {
+  <div class="modal-backdrop">
+    <section class="clue-modal">
+      <p class="clue-value">${{ selectedClue.basePoints }}</p>
+      <h2>{{ selectedClue.question }}</h2>
+
+      <details>
+        <summary>Show answer</summary>
+        <p>{{ selectedClue.correctAnswer }}</p>
+      </details>
+
+      <div class="modal-actions">
+        <button type="button" (click)="closeClue()">Close</button>
+        <button type="button" (click)="markAnswered()">Mark Answered</button>
+      </div>
+    </section>
+  </div>
+}
