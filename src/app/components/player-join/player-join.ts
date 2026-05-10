@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { PlayerService } from '../../services/player/player-api';
 
 @Component({
@@ -16,7 +17,10 @@ export class PlayerJoinComponent {
   errorMessage = '';
   loading = true;
 
-  constructor(private playerService: PlayerService) {}
+  constructor(
+    private playerService: PlayerService,
+    private router: Router,
+  ) {}
 
   onJoinCodeInput(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -30,9 +34,9 @@ export class PlayerJoinComponent {
 
   joinGame(): void {
     this.playerService.joinGame(this.joinCode, this.playerName).subscribe({
-      next: () => {   
+      next: () => {
         this.loading = false;
-        // navigate to game lobby
+        void this.router.navigate(['/join-confirmation']);
       },
       error: () => {
         this.errorMessage = 'Could not load the game board.';
