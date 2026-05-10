@@ -10,7 +10,10 @@ export class PlayerService {
     constructor(private http: HttpClient) {}
 
     joinGame(joinCode: string, playerName: string) {
-        console.log('api', `${this.apiUrl}/players/join`, { joinCode, playerName });
         return this.http.post(`${this.apiUrl}/players/join`, { joinCode, playerName });
+    }
+
+    getPlayers(gameId: number) {
+        return this.http.get(`${this.apiUrl}/players/game/${gameId}`);
     }
 }

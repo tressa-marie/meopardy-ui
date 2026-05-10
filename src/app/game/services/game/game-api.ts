@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/enironment';
-import { GameBoard } from '../../models/board';
-import { Clue } from '../../models/clue';
-import { Game } from '../../models/game';
+import { environment } from '../../../../environments/enironment';
+import { GameBoard } from '../../../models/board';
+import { Clue } from '../../../models/clue';
+import { Game } from '../../../models/game';
 
 
 @Injectable({

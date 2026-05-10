@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { PlayerService } from '../../services/player/player-api';
+import { PlayerService } from '../../services/player-api';
 
 @Component({
   selector: 'app-player-join',

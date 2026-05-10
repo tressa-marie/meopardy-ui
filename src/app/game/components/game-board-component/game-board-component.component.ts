@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GameBoard } from '../../models/board';
-import { Clue } from '../../models/clue';
+import { GameBoard } from '../../../models/board';
+import { Clue } from '../../../models/clue';
 import { GameService } from '../../services/game/game-api';
 
 @Component({
-  selector: 'app-host-game',
+  selector: 'app-game-board-component',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './host-game.component.html',
-  styleUrl: './host-game.component.scss'
+  templateUrl: './game-board-component.component.html',
+  styleUrl: './game-board-component.component.scss'
 })
 
-export class HostGameComponent implements OnInit {
+export class GameBoardComponentComponent implements OnInit {
   board?: GameBoard;
   selectedClue?: Clue;
   loading = true;
