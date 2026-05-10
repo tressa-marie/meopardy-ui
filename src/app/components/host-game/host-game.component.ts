@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameBoard } from '../../models/board';
 import { Clue } from '../../models/clue';
-import { GameService } from '../../services/game-api';
+import { GameService } from '../../services/game/game-api';
 
 @Component({
   selector: 'app-host-game',

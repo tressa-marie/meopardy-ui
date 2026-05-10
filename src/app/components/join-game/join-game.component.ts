@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { GameService } from '../../services/game-api';
+import { GameService } from '../../services/game/game-api';
 
 @Component({
   selector: 'app-join-game',
