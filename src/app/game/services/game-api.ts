@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/enironment';
-import { GameBoard } from '../../../models/board';
-import { Clue } from '../../../models/clue';
-import { Game } from '../../../models/game';
+import { environment } from '../../../environments/enironment';
+import { GameBoard } from '../../models/board';
+import { Clue } from '../../models/clue';
+import { Game } from '../../models/game';
 
 
 @Injectable({
@@ -12,8 +12,7 @@ import { Game } from '../../../models/game';
 })
 export class GameService {
   private readonly apiUrl = environment.apiUrl;
-
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   getGame(gameId: number): Observable<Game> {
     return this.http.get<Game>(`${this.apiUrl}/games/${gameId}`);

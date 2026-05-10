@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameBoard } from '../../../models/board';
 import { Clue } from '../../../models/clue';
-import { GameService } from '../../services/game/game-api';
+import { GameService } from '../../services/game-api';
 
 @Component({
   selector: 'app-game-board-component',
@@ -17,8 +17,7 @@ export class GameBoardComponentComponent implements OnInit {
   selectedClue?: Clue;
   loading = true;
   errorMessage = '';
-
-  constructor(private gameService: GameService) {}
+  private readonly gameService = inject(GameService);
 
   ngOnInit(): void {
     this.gameService.getGameBoard(8).subscribe({

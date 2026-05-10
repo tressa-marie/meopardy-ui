@@ -1,16 +1,10 @@
 .join-confirmation-screen {
-  min-height: 100vh;
-  display: flex;
   flex-direction: column;
-  justify-content: center;
-
   align-items: center;
-  background:
-    radial-gradient(circle at top, rgba(255, 215, 106, 0.18), transparent 34%),
-    linear-gradient(180deg, #071a44 0%, #0b2763 100%);
-  color: #ffffff;
+  gap: 0.5rem;
+  text-align: center;
 }
 
 p {
-    font-size: 20px;
+  font-size: 20px;
 }

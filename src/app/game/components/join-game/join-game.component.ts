@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { GameService } from '../../services/game/game-api';
+import { GameService } from '../../services/game-api';
 
 @Component({
   selector: 'app-join-game',
@@ -14,8 +14,7 @@ export class JoinGameComponent implements OnInit {
   joinCode: string = '';
   loading = true;
   errorMessage = '';
-
-  constructor(private gameService: GameService) {}
+  private readonly gameService = inject(GameService);
 
   ngOnInit(): void {
     this.gameService.getJoinCode(8).subscribe({

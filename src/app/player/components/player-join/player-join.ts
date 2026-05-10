@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { PlayerService } from '../../services/player-api';
 
@@ -12,15 +12,12 @@ import { PlayerService } from '../../services/player-api';
 })
 export class PlayerJoinComponent {
   readonly gameTitle = 'Meopardy'; // TODO: Get from config
+  private readonly playerService = inject(PlayerService);
+  private readonly router = inject(Router);
   joinCode = '';
   playerName = '';
   errorMessage = '';
   loading = true;
-
-  constructor(
-    private playerService: PlayerService,
-    private router: Router,
-  ) {}
 
   onJoinCodeInput(event: Event): void {
     const input = event.target as HTMLInputElement;
