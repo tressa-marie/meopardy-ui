@@ -13,6 +13,10 @@
       [value]="joinCode"
       (input)="onJoinCodeInput($event)" />
 
+    @if (errorMessage) {
+      <p class="join-error" role="alert">{{ errorMessage }}</p>
+    }
+
     <label class="join-label" for="player-name">Player Name</label>
       <input
       id="player-name"
@@ -24,8 +28,8 @@
       [value]="playerName"
       (input)="onPlayerNameInput($event)" />
 
-    <button type="button" class="join-button" (click)="joinGame()">
-      Join
+    <button type="button" class="join-button" [disabled]="loading" (click)="joinGame()">
+      {{ loading ? 'Joining...' : 'Join' }}
     </button>
   </section>
 </main>

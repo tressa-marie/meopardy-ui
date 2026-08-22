@@ -1,1 +1,20 @@
-<p>player-lobby-component works!</p>
+<main class="app-screen app-screen--centered lobby-screen">
+  <section class="lobby-panel">
+    <p class="eyebrow">Admin Lobby</p>
+    <h1>Players</h1>
+
+    @if (players.length === 0) {
+      <p class="status">No players have joined yet.</p>
+    } @else {
+      <ul class="player-list" aria-label="Players in lobby">
+        @for (player of players; track player.id) {
+          <li class="player-row">
+            <span class="player-name">{{ player.name }}</span>
+          </li>
+        }
+      </ul>
+    }
+
+    <button type="button" class="start-button" (click)="startGame()">Start Game</button>
+  </section>
+</main>

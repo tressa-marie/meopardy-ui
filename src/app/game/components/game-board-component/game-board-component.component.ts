@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { GameBoard } from '../../../models/board';
 import { Clue } from '../../../models/clue';
 import { GameService } from '../../services/game-api';
+import { environment } from '../../../../environments/enironment';
 
 @Component({
   selector: 'app-game-board-component',
@@ -13,6 +14,7 @@ import { GameService } from '../../services/game-api';
 })
 
 export class GameBoardComponentComponent implements OnInit {
+  private readonly gameId = environment.gameId;
   board?: GameBoard;
   selectedClue?: Clue;
   loading = true;
@@ -20,7 +22,7 @@ export class GameBoardComponentComponent implements OnInit {
   private readonly gameService = inject(GameService);
 
   ngOnInit(): void {
-    this.gameService.getGameBoard(8).subscribe({
+    this.gameService.getGameBoard(this.gameId).subscribe({
       next: board => {
         this.board = board;
         this.loading = false;
