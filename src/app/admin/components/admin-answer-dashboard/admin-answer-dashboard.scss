@@ -2,22 +2,30 @@
   padding: 2rem;
 }
 
-.admin-answer-dashboard-panel {
-  width: min(100%, 52rem);
+.admin-answer-dashboard-layout {
+  width: min(100%, 76rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(18rem, 0.85fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.admin-answer-dashboard-panel,
+.scoreboard-panel {
   display: grid;
   gap: 1rem;
   padding: 2.5rem 2rem;
-  background: rgba(17, 50, 122, 0.94);
-  border: 4px solid #d6b15d;
+  background: var(--theme-surface);
+  border: 4px solid var(--theme-border);
   border-radius: 1rem;
-  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.3);
+  box-shadow: var(--theme-shadow-lg);
   text-align: center;
 }
 
 .eyebrow,
 .section-label {
   margin: 0;
-  color: #d5def7;
+  color: var(--theme-text-secondary);
   font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.2rem;
@@ -26,10 +34,19 @@
 
 .admin-answer-dashboard-panel h1 {
   margin: 0;
-  color: #ffffff;
+  color: var(--theme-text-primary);
   font-size: clamp(2.25rem, 5vw, 3.5rem);
   font-weight: 900;
   letter-spacing: 0.08rem;
+  text-transform: uppercase;
+}
+
+.scoreboard-panel h2 {
+  margin: 0;
+  color: var(--theme-text-primary);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 900;
+  letter-spacing: 0.06rem;
   text-transform: uppercase;
 }
 
@@ -38,8 +55,8 @@
   display: grid;
   gap: 0.75rem;
   padding: 1.5rem;
-  background: rgba(7, 26, 68, 0.88);
-  border: 3px solid rgba(214, 177, 93, 0.8);
+  background: var(--theme-surface-dark-muted);
+  border: 3px solid var(--theme-border-strong);
   border-radius: 0.85rem;
   text-align: left;
 }
@@ -57,7 +74,7 @@
 .player-name,
 .submitted-answer,
 .response-time {
-  color: #ffffff;
+  color: var(--theme-text-primary);
 }
 
 .question-text,
@@ -69,7 +86,7 @@
 .question-meta,
 .empty-state,
 .response-time {
-  color: #d5def7;
+  color: var(--theme-text-secondary);
 }
 
 .answers-list {
@@ -86,8 +103,8 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.1rem;
-  background: rgba(17, 50, 122, 0.7);
-  border: 2px solid rgba(214, 177, 93, 0.45);
+  background: var(--theme-surface-muted);
+  border: 2px solid var(--theme-border-soft);
   border-radius: 0.75rem;
 }
 
@@ -115,29 +132,29 @@
 }
 
 .answer-status--correct {
-  color: #9ff0b4;
+  color: var(--theme-text-success);
 }
 
 .answer-status--incorrect {
-  color: #ffb3b3;
+  color: var(--theme-text-danger);
 }
 
 .answer-status--pending {
-  color: #ffd76a;
+  color: var(--theme-text-accent);
 }
 
 .toggle-group {
   display: inline-flex;
-  border: 2px solid rgba(214, 177, 93, 0.55);
+  border: 2px solid var(--theme-border-subtle);
   border-radius: 999px;
   overflow: hidden;
 }
 
 .toggle-button {
   padding: 0.65rem 1rem;
-  background: rgba(7, 26, 68, 0.9);
+  background: var(--theme-surface-dark);
   border: 0;
-  color: #d5def7;
+  color: var(--theme-text-secondary);
   font-size: 0.9rem;
   font-weight: 800;
   letter-spacing: 0.05rem;
@@ -146,6 +163,66 @@
 }
 
 .toggle-button--active {
-  background: #ffd76a;
-  color: #071a44;
+  background: var(--theme-button-bg);
+  color: var(--theme-button-text);
+}
+
+.scoreboard-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  background: var(--theme-surface-dark-muted);
+  border: 2px solid var(--theme-border-soft);
+  border-radius: 0.75rem;
+}
+
+.score-rank-name {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+.score-rank {
+  width: 2rem;
+  height: 2rem;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--theme-button-bg);
+  color: var(--theme-button-text);
+  font-weight: 900;
+}
+
+.score-name,
+.score-value {
+  color: var(--theme-text-primary);
+  font-weight: 800;
+}
+
+.score-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.score-value {
+  color: var(--theme-text-accent);
+  font-size: 1.15rem;
+}
+
+@media (max-width: 960px) {
+  .admin-answer-dashboard-layout {
+    grid-template-columns: 1fr;
+  }
 }

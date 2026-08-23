@@ -7,16 +7,16 @@
   display: grid;
   gap: 1rem;
   padding: 2.5rem 2rem;
-  background: rgba(17, 50, 122, 0.94);
-  border: 4px solid #d6b15d;
+  background: var(--theme-surface);
+  border: 4px solid var(--theme-border);
   border-radius: 1rem;
-  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.3);
+  box-shadow: var(--theme-shadow-lg);
   text-align: center;
 }
 
 .join-panel h1 {
   margin: 0 0 0.5rem;
-  color: #ffffff;
+  color: var(--theme-text-primary);
   font-size: clamp(2.25rem, 5vw, 3.5rem);
   font-weight: 900;
   letter-spacing: 0.08rem;
@@ -24,7 +24,7 @@
 }
 
 .join-label {
-  color: #d5def7;
+  color: var(--theme-text-secondary);
   font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.2rem;
@@ -34,10 +34,10 @@
 .join-input {
   width: calc(100% - 50px);
   padding: 1rem 1.25rem;
-  background: #071a44;
-  border: 3px solid #d6b15d;
+  background: var(--theme-input-bg);
+  border: 3px solid var(--theme-input-border);
   border-radius: 0.85rem;
-  color: #ffd76a;
+  color: var(--theme-input-text);
   font-size: clamp(1.75rem, 7vw, 2.75rem);
   font-weight: 900;
   letter-spacing: 0.4rem;
@@ -45,17 +45,17 @@
 }
 
 .join-input::placeholder {
-  color: rgba(255, 215, 106, 0.45);
+  color: var(--theme-text-placeholder);
 }
 
 .join-input:focus {
-  outline: 3px solid rgba(255, 215, 106, 0.25);
+  outline: 3px solid var(--theme-input-outline);
   outline-offset: 0.2rem;
 }
 
 .join-error {
   margin: -0.25rem 0 0;
-  color: #ffd1d1;
+  color: var(--theme-text-error);
   font-size: 0.95rem;
   font-weight: 700;
 }
@@ -64,17 +64,17 @@
   justify-self: center;
   min-width: 12rem;
   padding: 0.95rem 1.5rem;
-  background: #ffd76a;
-  border: 3px solid #d6b15d;
+  background: var(--theme-button-bg);
+  border: 3px solid var(--theme-button-border);
   border-radius: 999px;
-  color: #071a44;
+  color: var(--theme-button-text);
   font-size: 1rem;
   font-weight: 900;
   letter-spacing: 0.08rem;
   text-transform: uppercase;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.25);
+  box-shadow: var(--theme-shadow-md);
 }
 
 .join-button:disabled {

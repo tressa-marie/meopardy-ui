@@ -7,16 +7,16 @@
   display: grid;
   gap: 1rem;
   padding: 2.5rem 2rem;
-  background: rgba(17, 50, 122, 0.94);
-  border: 4px solid #d6b15d;
+  background: var(--theme-surface);
+  border: 4px solid var(--theme-border);
   border-radius: 1rem;
-  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.3);
+  box-shadow: var(--theme-shadow-lg);
   text-align: center;
 }
 
 .eyebrow {
   margin: 0;
-  color: #d5def7;
+  color: var(--theme-text-secondary);
   font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.2rem;
@@ -25,7 +25,7 @@
 
 .player-board-panel h1 {
   margin: 0;
-  color: #ffffff;
+  color: var(--theme-text-primary);
   font-size: clamp(2.25rem, 5vw, 3.5rem);
   font-weight: 900;
   letter-spacing: 0.08rem;
@@ -34,7 +34,7 @@
 
 .player-board-message {
   margin: 0;
-  color: #d5def7;
+  color: var(--theme-text-secondary);
   font-size: 1.15rem;
   line-height: 1.6;
 }

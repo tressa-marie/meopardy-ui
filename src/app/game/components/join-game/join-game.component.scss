@@ -4,7 +4,7 @@
 
 .eyebrow {
   margin: 0 0 1rem;
-  color: #ffd76a;
+  color: var(--theme-text-accent);
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: 0.25rem;
@@ -19,15 +19,15 @@
 .join-card {
   min-width: min(100%, 420px);
   padding: 2rem;
-  background: rgba(17, 50, 122, 0.92);
-  border: 4px solid #d6b15d;
+  background: var(--theme-surface-strong);
+  border: 4px solid var(--theme-border);
   border-radius: 1rem;
-  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.3);
+  box-shadow: var(--theme-shadow-lg);
 }
 
 .label {
   margin: 0 0 1rem;
-  color: #d5def7;
+  color: var(--theme-text-secondary);
   font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.2rem;
@@ -36,7 +36,7 @@
 
 .code {
   margin: 0;
-  color: #ffd76a;
+  color: var(--theme-text-accent);
   font-size: clamp(2.5rem, 8vw, 5rem);
   font-weight: 900;
   letter-spacing: 0.35rem;
@@ -49,17 +49,17 @@
   justify-content: center;
   min-width: 220px;
   padding: 0.95rem 1.5rem;
-  background: #ffd76a;
-  border: 3px solid #d6b15d;
+  background: var(--theme-button-bg);
+  border: 3px solid var(--theme-button-border);
   border-radius: 999px;
-  color: #071a44;
+  color: var(--theme-button-text);
   font-size: 1rem;
   font-weight: 900;
   letter-spacing: 0.08rem;
   text-decoration: none;
   text-transform: uppercase;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.25);
+  box-shadow: var(--theme-shadow-md);
 }
 
 .start-button:hover {
@@ -67,5 +67,5 @@
 }
 
 .error {
-  color: red;
+  color: var(--theme-text-error);
 }

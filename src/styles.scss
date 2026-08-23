@@ -1,5 +1,45 @@
 /* You can add global styles to this file, and also import other style files */
 
+:root {
+  --theme-bg-radial: rgba(255, 215, 106, 0.18);
+  --theme-bg-start: #071a44;
+  --theme-bg-end: #0b2763;
+
+  --theme-surface: rgba(17, 50, 122, 0.94);
+  --theme-surface-strong: rgba(17, 50, 122, 0.92);
+  --theme-surface-muted: rgba(17, 50, 122, 0.7);
+  --theme-surface-dark: rgba(7, 26, 68, 0.9);
+  --theme-surface-dark-muted: rgba(7, 26, 68, 0.88);
+  --theme-overlay: rgba(0, 0, 0, 0.75);
+
+  --theme-border: #d6b15d;
+  --theme-border-strong: rgba(214, 177, 93, 0.8);
+  --theme-border-muted: rgba(214, 177, 93, 0.65);
+  --theme-border-subtle: rgba(214, 177, 93, 0.55);
+  --theme-border-soft: rgba(214, 177, 93, 0.45);
+
+  --theme-text-primary: #ffffff;
+  --theme-text-secondary: #d5def7;
+  --theme-text-accent: #ffd76a;
+  --theme-text-on-accent: #071a44;
+  --theme-text-success: #9ff0b4;
+  --theme-text-danger: #ffb3b3;
+  --theme-text-error: #ffd1d1;
+  --theme-text-placeholder: rgba(255, 215, 106, 0.45);
+
+  --theme-button-bg: #ffd76a;
+  --theme-button-border: #d6b15d;
+  --theme-button-text: #071a44;
+
+  --theme-input-bg: #071a44;
+  --theme-input-border: #d6b15d;
+  --theme-input-text: #ffd76a;
+  --theme-input-outline: rgba(255, 215, 106, 0.25);
+
+  --theme-shadow-lg: 0 1.5rem 4rem rgba(0, 0, 0, 0.3);
+  --theme-shadow-md: 0 0.75rem 2rem rgba(0, 0, 0, 0.25);
+}
+
 html,
 body {
   min-height: 100%;
@@ -13,9 +53,9 @@ body {
 .app-screen {
   min-height: 100vh;
   background:
-    radial-gradient(circle at top, rgba(255, 215, 106, 0.18), transparent 34%),
-    linear-gradient(180deg, #071a44 0%, #0b2763 100%);
-  color: #ffffff;
+    radial-gradient(circle at top, var(--theme-bg-radial), transparent 34%),
+    linear-gradient(180deg, var(--theme-bg-start) 0%, var(--theme-bg-end) 100%);
+  color: var(--theme-text-primary);
 }
 
 .app-screen--centered {

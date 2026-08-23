@@ -10,7 +10,7 @@ import { AdminAnswerDashboardComponent } from './admin/components/admin-answer-d
 
 export const routes: Routes = [
   { path: 'admin-lobby', component: PlayerLobbyComponent },
-  { path: 'admin-answer-dashboard', component: AdminAnswerDashboardComponent },
+  { path: 'admin-dashboard', component: AdminAnswerDashboardComponent },
   { path: 'join-code', component: JoinGameComponent },
   { path: 'host', component: GameBoardComponentComponent },
   { path: 'join', component: PlayerJoinComponent },
