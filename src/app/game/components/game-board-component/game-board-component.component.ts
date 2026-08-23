@@ -1,20 +1,29 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameBoard } from '../../../models/board';
 import { Clue } from '../../../models/clue';
 import { GameService } from '../../services/game-api';
 import { environment } from '../../../../environments/enironment';
+import { finalize, timeout } from 'rxjs/operators';
+import { SocketService } from '../../../core/services/socket/socker.service';
+import { AdminAnswerStateService } from '../../../admin/services/admin-answer-state.service';
 
 @Component({
   selector: 'app-game-board-component',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './game-board-component.component.html',
-  styleUrl: './game-board-component.component.scss'
+  styleUrl: './game-board-component.component.scss',
+  host: {
+    ngSkipHydration: 'true',
+  },
 })
 
 export class GameBoardComponentComponent implements OnInit {
   private readonly gameId = environment.gameId;
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly socketService = inject(SocketService);
+  private readonly adminAnswerStateService = inject(AdminAnswerStateService);
   board?: GameBoard;
   selectedClue?: Clue;
   loading = true;
@@ -22,26 +31,42 @@ export class GameBoardComponentComponent implements OnInit {
   private readonly gameService = inject(GameService);
 
   ngOnInit(): void {
-    this.gameService.getGameBoard(this.gameId).subscribe({
+    console.log('[GameBoardComponent] ngOnInit', { gameId: this.gameId });
+    this.gameService.getGameBoard(this.gameId)
+      .pipe(
+        timeout(10000),
+        finalize(() => {
+          this.loading = false;
+          console.log('[GameBoardComponent] finalize', {
+            hasBoard: !!this.board,
+            errorMessage: this.errorMessage,
+          });
+          this.changeDetectorRef.detectChanges();
+        })
+      )
+      .subscribe({
       next: board => {
         this.board = board;
-        this.loading = false;
-        console.log('board', board);
+        console.log('[GameBoardComponent] board loaded', board);
       },
-      error: () => {
+      error: error => {
+        console.log('[GameBoardComponent] board load error', error);
         this.errorMessage = 'Could not load the game board.';
-        this.loading = false;
-      }
+      },
     });
   }
 
   selectClue(clue: Clue): void {
     if (clue.isAnswered) return;
     this.selectedClue = clue;
+    this.adminAnswerStateService.setSelectedClue(clue);
+    this.socketService.selectClue(this.gameId, clue);
   }
 
   closeClue(): void {
     this.selectedClue = undefined;
+    this.adminAnswerStateService.clearSelectedClue();
+    this.socketService.closeClue(this.gameId);
   }
 
   markAnswered(): void {

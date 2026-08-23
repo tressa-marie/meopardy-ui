@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { PlayerService } from '../../services/player-api';
 import { SocketService } from '../../../core/services/socket/socker.service';
 import { environment } from '../../../../environments/enironment';
+import { PlayerSessionService } from '../../services/player-session.service';
 
 @Component({
   selector: 'app-player-join',
@@ -18,6 +19,7 @@ export class PlayerJoinComponent {
   private readonly gameId = environment.gameId;
   private readonly playerService = inject(PlayerService);
   private readonly socketService = inject(SocketService);
+  private readonly playerSessionService = inject(PlayerSessionService);
   private readonly router = inject(Router);
   joinCode = '';
   playerName = '';
@@ -57,7 +59,8 @@ export class PlayerJoinComponent {
     this.errorMessage = '';
 
     this.playerService.joinGame(joinCode, playerName).subscribe({
-      next: () => {
+      next: player => {
+        this.playerSessionService.savePlayer(player);
         console.log('[PlayerJoinComponent] joinGame success');
         this.socketService.notifyPlayerJoined(this.gameId);
         this.loading = false;

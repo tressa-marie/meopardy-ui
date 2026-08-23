@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { environment } from '../../../../environments/enironment';
 import { Player } from '../../../models/player';
 import { PlayerService } from '../../../player/services/player-api';
@@ -21,6 +22,7 @@ export class PlayerLobbyComponent implements OnInit, OnDestroy {
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly playerService = inject(PlayerService);
   private readonly socketService = inject(SocketService);
+  private readonly router = inject(Router);
   private readonly destroy$ = new Subject<void>();
   private setupTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -36,6 +38,10 @@ export class PlayerLobbyComponent implements OnInit, OnDestroy {
       this.socketService.onPlayersUpdated(() => {
         console.log('[PlayerLobbyComponent] socket-triggered refresh');
         this.loadPlayers();
+      });
+      this.socketService.onGameStarted(() => {
+        console.log('[PlayerLobbyComponent] game started, navigating to /host');
+        void this.router.navigate(['/host']);
       });
 
       timer(3000, 3000)
@@ -59,6 +65,7 @@ export class PlayerLobbyComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     console.log('[PlayerLobbyComponent] ngOnDestroy');
     this.socketService.offPlayersUpdated();
+    this.socketService.offGameStarted();
     if (this.setupTimer) {
       clearTimeout(this.setupTimer);
     }
@@ -67,7 +74,9 @@ export class PlayerLobbyComponent implements OnInit, OnDestroy {
   }
 
   startGame(): void {
-    console.log('Start Game clicked');
+    console.log('[PlayerLobbyComponent] Start Game clicked', { gameId: this.gameId });
+    this.socketService.startGame(this.gameId);
+    void this.router.navigate(['/host']);
   }
 
   private loadPlayers(): void {

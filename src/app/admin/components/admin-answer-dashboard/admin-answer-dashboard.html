@@ -1,0 +1,66 @@
+<main class="app-screen app-screen--centered admin-answer-dashboard-screen">
+  <section class="admin-answer-dashboard-panel">
+    <p class="eyebrow">Admin Answer Dashboard</p>
+    <h1>Submitted Answers</h1>
+
+    <section class="question-card" aria-label="Currently selected question">
+      <p class="section-label">Current Question</p>
+      @if (selectedClue) {
+        <p class="question-text">{{ selectedClue.question }}</p>
+        <p class="question-meta">${{ selectedClue.basePoints }} clue</p>
+      } @else {
+        <p class="empty-state">No question is selected yet.</p>
+      }
+    </section>
+
+    <section class="answers-card" aria-label="Submitted answers">
+      <p class="section-label">Player Answers</p>
+      @if (submittedAnswers.length > 0) {
+        <ul class="answers-list">
+          @for (answer of submittedAnswers; track $index) {
+            <li class="answer-row">
+              <div class="answer-copy">
+                <p class="player-name">{{ answer.playerName || ('Player #' + answer.playerId) }}</p>
+                <p class="submitted-answer">{{ answer.submittedAnswer }}</p>
+                <p
+                  class="answer-status"
+                  [class.answer-status--correct]="answer.isCorrect === true"
+                  [class.answer-status--incorrect]="answer.isCorrect === false"
+                  [class.answer-status--pending]="answer.isCorrect === null">
+                  @if (answer.isCorrect === true) {
+                    Correct
+                  } @else if (answer.isCorrect === false) {
+                    Incorrect
+                  } @else {
+                    Needs Review
+                  }
+                </p>
+              </div>
+              <div class="answer-controls">
+                <p class="response-time">{{ answer.responseTimeMs }} ms</p>
+                <div class="toggle-group" aria-label="Mark answer correctness">
+                  <button
+                    type="button"
+                    class="toggle-button"
+                    [class.toggle-button--active]="answer.isCorrect === true"
+                    (click)="setAnswerCorrectness(answer, true)">
+                    Correct
+                  </button>
+                  <button
+                    type="button"
+                    class="toggle-button"
+                    [class.toggle-button--active]="answer.isCorrect === false"
+                    (click)="setAnswerCorrectness(answer, false)">
+                    Incorrect
+                  </button>
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="empty-state">No answers have been submitted for this question yet.</p>
+      }
+    </section>
+  </section>
+</main>

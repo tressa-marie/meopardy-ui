@@ -1,0 +1,41 @@
+<main class="app-screen app-screen--centered player-answer-screen">
+  <section class="player-answer-panel">
+    <p class="eyebrow">Player Answer</p>
+    <h1>Submit Your Answer</h1>
+
+    <section class="question-card" aria-label="Selected question">
+      <p class="section-label">Question</p>
+      @if (question) {
+        <p class="question-text">{{ question }}</p>
+      } @else {
+        <p class="question-placeholder">Waiting for the selected question to appear.</p>
+      }
+    </section>
+
+    <label class="section-label" for="player-answer">Your Answer</label>
+    <input
+      id="player-answer"
+      class="answer-input"
+      type="text"
+      maxlength="120"
+      placeholder="Type your answer here"
+      [(ngModel)]="answer"
+      [disabled]="submitted || submitting" />
+
+    <button
+      type="button"
+      class="submit-button"
+      [disabled]="!canSubmit"
+      (click)="submitAnswer()">
+      {{ submitted ? 'Answer Submitted' : (submitting ? 'Submitting...' : 'Submit Answer') }}
+    </button>
+
+    @if (submitted) {
+      <p class="submission-note">Your answer is in. Please wait for the next prompt.</p>
+    }
+
+    @if (errorMessage) {
+      <p class="submission-error">{{ errorMessage }}</p>
+    }
+  </section>
+</main>
