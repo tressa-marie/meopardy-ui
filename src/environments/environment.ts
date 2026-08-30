@@ -3,5 +3,5 @@ export const environment = {
   apiUrl: 'http://localhost:3000/api',
   socketUrl: 'http://localhost:3000',
   gameTitle: 'Meopardy',
-  gameId: 8
+  defaultGameId: 8
 };

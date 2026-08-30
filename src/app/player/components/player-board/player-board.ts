@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { SocketService } from '../../../core/services/socket/socker.service';
-import { environment } from '../../../../environments/environment';
+import { PlayerSessionService } from '../../services/player-session.service';
 import { PlayerClueStateService } from '../../services/player-clue-state.service';
 
 @Component({
@@ -15,10 +15,16 @@ export class PlayerBoardComponent implements OnInit, OnDestroy {
   private readonly socketService = inject(SocketService);
   private readonly playerClueStateService = inject(PlayerClueStateService);
   private readonly router = inject(Router);
-  private readonly gameId = environment.gameId;
+  private readonly playerSessionService = inject(PlayerSessionService);
+  private readonly gameId = this.playerSessionService.getGameId();
 
   ngOnInit(): void {
     console.log('[PlayerBoardComponent] ngOnInit', { gameId: this.gameId });
+    if (!this.gameId) {
+      void this.router.navigate(['/join']);
+      return;
+    }
+
     this.socketService.joinPlayerGame(this.gameId);
     this.socketService.onClueSelected(clue => {
       console.log('[PlayerBoardComponent] clue selected, navigating to /player-answer', { clue });

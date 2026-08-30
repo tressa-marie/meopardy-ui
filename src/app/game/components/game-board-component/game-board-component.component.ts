@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { GameBoard } from '../../../models/board';
 import { Clue } from '../../../models/clue';
 import { GameService } from '../../services/game-api';
-import { environment } from '../../../../environments/environment';
+import { injectRouteGameId } from '../../../core/routing/game-id';
 import { finalize, timeout } from 'rxjs/operators';
 import { SocketService } from '../../../core/services/socket/socker.service';
 import { AdminAnswerStateService } from '../../../admin/services/admin-answer-state.service';
@@ -17,7 +17,7 @@ import { AdminAnswerStateService } from '../../../admin/services/admin-answer-st
 })
 
 export class GameBoardComponentComponent implements OnInit {
-  private readonly gameId = environment.gameId;
+  private readonly gameId = injectRouteGameId();
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly socketService = inject(SocketService);
   private readonly adminAnswerStateService = inject(AdminAnswerStateService);

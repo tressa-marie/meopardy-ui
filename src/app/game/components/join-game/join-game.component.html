@@ -14,6 +14,6 @@
       <p class="label">Join Code</p>
       <p class="code">{{ joinCode }}</p>
     </section>
-    <a class="start-button" routerLink="/host">Start Game</a>
+    <a class="start-button" [routerLink]="['/host', gameId]">Start Game</a>
   </main>
 }

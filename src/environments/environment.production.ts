@@ -3,5 +3,5 @@ export const environment = {
   apiUrl: 'https://meopardy-backend.onrender.com/api',
   socketUrl: 'https://meopardy-backend.onrender.com',
   gameTitle: 'Meopardy',
-  gameId: 8
+  defaultGameId: 8
 };

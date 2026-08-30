@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { environment } from '../../../../environments/environment';
+import { injectRouteGameId } from '../../../core/routing/game-id';
 import { Player } from '../../../models/player';
 import { PlayerService } from '../../../player/services/player-api';
 import { SocketService } from '../../../core/services/socket/socker.service';
@@ -25,7 +25,7 @@ export class PlayerLobbyComponent implements OnInit, OnDestroy {
 
   players: Player[] = [];
 
-  gameId = environment.gameId;
+  readonly gameId = injectRouteGameId();
 
   ngOnInit(): void {
     console.log('[PlayerLobbyComponent] ngOnInit', { gameId: this.gameId });
@@ -38,7 +38,7 @@ export class PlayerLobbyComponent implements OnInit, OnDestroy {
       });
       this.socketService.onGameStarted(() => {
         console.log('[PlayerLobbyComponent] game started, navigating to /host');
-        void this.router.navigate(['/host']);
+        void this.router.navigate(['/host', this.gameId]);
       });
 
       timer(3000, 3000)
@@ -73,7 +73,7 @@ export class PlayerLobbyComponent implements OnInit, OnDestroy {
   startGame(): void {
     console.log('[PlayerLobbyComponent] Start Game clicked', { gameId: this.gameId });
     this.socketService.startGame(this.gameId);
-    void this.router.navigate(['/host']);
+    void this.router.navigate(['/host', this.gameId]);
   }
 
   private loadPlayers(): void {

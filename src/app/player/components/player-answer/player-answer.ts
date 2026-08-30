@@ -6,7 +6,6 @@ import { PlayerService } from '../../services/player-api';
 import { PlayerSessionService } from '../../services/player-session.service';
 import { AdminAnswerStateService } from '../../../admin/services/admin-answer-state.service';
 import { SocketService } from '../../../core/services/socket/socker.service';
-import { environment } from '../../../../environments/environment';
 import { Router } from '@angular/router';
 
 @Component({
@@ -24,7 +23,7 @@ export class PlayerAnswerComponent implements OnInit, OnDestroy {
   private readonly adminAnswerStateService = inject(AdminAnswerStateService);
   private readonly socketService = inject(SocketService);
   private readonly router = inject(Router);
-  private readonly gameId = environment.gameId;
+  private readonly gameId = this.playerSessionService.getGameId();
 
   answer = '';
   submitted = false;
@@ -33,6 +32,11 @@ export class PlayerAnswerComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     console.log('[PlayerAnswerComponent] ngOnInit', { gameId: this.gameId });
+    if (!this.gameId) {
+      this.errorMessage = 'Could not find your player session. Please rejoin the game.';
+      return;
+    }
+
     this.socketService.joinPlayerGame(this.gameId);
     this.socketService.onClueSelected(clue => {
       console.log('[PlayerAnswerComponent] received selected clue', { clue });
@@ -81,8 +85,9 @@ export class PlayerAnswerComponent implements OnInit, OnDestroy {
 
     const clueId = this.playerClueStateService.getSelectedClue()?.id;
     const playerId = this.playerSessionService.getPlayerId();
+    const gameId = this.gameId;
 
-    if (!clueId || !playerId) {
+    if (!clueId || !playerId || !gameId) {
       this.errorMessage = 'Could not submit your answer. Please rejoin the game.';
       return;
     }
@@ -108,7 +113,7 @@ export class PlayerAnswerComponent implements OnInit, OnDestroy {
           isCorrect: null,
         };
         this.adminAnswerStateService.addSubmittedAnswer(submittedAnswer);
-        this.socketService.submitAnswer(this.gameId, submittedAnswer);
+        this.socketService.submitAnswer(gameId, submittedAnswer);
         this.changeDetectorRef.detectChanges();
         console.log('[PlayerAnswerComponent] answer submitted', request);
       },

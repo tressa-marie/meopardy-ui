@@ -34,6 +34,10 @@ export class PlayerSessionService {
     }
   }
 
+  getGameId(): number | undefined {
+    return this.getPlayer()?.gameId;
+  }
+
   getPlayerId(): number | undefined {
     return this.getPlayer()?.id;
   }

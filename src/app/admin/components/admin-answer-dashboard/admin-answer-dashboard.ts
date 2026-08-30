@@ -4,14 +4,14 @@ import { AdminAnswerStateService } from '../../services/admin-answer-state.servi
 import { SubmittedAnswer } from '../../models/submitted-answer';
 import { Clue } from '../../../models/clue';
 import { SocketService } from '../../../core/services/socket/socker.service';
-import { environment } from '../../../../environments/environment';
+import { injectRouteGameId } from '../../../core/routing/game-id';
 import { Player } from '../../../models/player';
 import { PlayerService } from '../../../player/services/player-api';
 import { Subject, timer } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 import { ThemeName, ThemeService } from '../../../core/services/theme/theme.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-answer-dashboard',
@@ -27,7 +27,8 @@ export class AdminAnswerDashboardComponent implements OnInit, OnDestroy {
   private readonly playerService = inject(PlayerService);
   private readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
-  private readonly gameId = environment.gameId;
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly gameId = injectRouteGameId();
   private readonly destroy$ = new Subject<void>();
 
   selectedClue?: Clue;
@@ -99,6 +100,7 @@ export class AdminAnswerDashboardComponent implements OnInit, OnDestroy {
     this.themeService.setTheme(theme);
     this.socketService.setTheme(this.gameId, theme);
     void this.router.navigate([], {
+      relativeTo: this.activatedRoute,
       queryParams: { theme },
       queryParamsHandling: 'merge',
       replaceUrl: true,

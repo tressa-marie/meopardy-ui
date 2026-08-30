@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PlayerJoin } from './player-join';
+import { PlayerJoinComponent } from './player-join';
 
-describe('PlayerJoin', () => {
-  let component: PlayerJoin;
-  let fixture: ComponentFixture<PlayerJoin>;
+describe('PlayerJoinComponent', () => {
+  let component: PlayerJoinComponent;
+  let fixture: ComponentFixture<PlayerJoinComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PlayerJoin]
+      imports: [PlayerJoinComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(PlayerJoin);
+    fixture = TestBed.createComponent(PlayerJoinComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

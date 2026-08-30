@@ -4,7 +4,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { PlayerService } from '../../services/player-api';
 import { SocketService } from '../../../core/services/socket/socker.service';
-import { environment } from '../../../../environments/environment';
 import { PlayerSessionService } from '../../services/player-session.service';
 
 @Component({
@@ -16,7 +15,6 @@ import { PlayerSessionService } from '../../services/player-session.service';
 })
 export class PlayerJoinComponent {
   readonly gameTitle = 'Meopardy'; // TODO: Get from config
-  private readonly gameId = environment.gameId;
   private readonly playerService = inject(PlayerService);
   private readonly socketService = inject(SocketService);
   private readonly playerSessionService = inject(PlayerSessionService);
@@ -41,7 +39,7 @@ export class PlayerJoinComponent {
   joinGame(): void {
     const joinCode = this.joinCode.trim();
     const playerName = this.playerName.trim();
-    console.log('[PlayerJoinComponent] joinGame clicked', { joinCode, playerName, gameId: this.gameId });
+    console.log('[PlayerJoinComponent] joinGame clicked', { joinCode, playerName });
 
     if (joinCode.length !== 6) {
       this.errorMessage = 'Enter the 6-character join code.';
@@ -62,7 +60,7 @@ export class PlayerJoinComponent {
       next: player => {
         this.playerSessionService.savePlayer(player);
         console.log('[PlayerJoinComponent] joinGame success');
-        this.socketService.notifyPlayerJoined(this.gameId);
+        this.socketService.notifyPlayerJoined(player.gameId);
         this.loading = false;
         void this.router.navigate(['/join-confirmation']);
       },
