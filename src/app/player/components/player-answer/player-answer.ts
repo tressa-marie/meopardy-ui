@@ -6,7 +6,7 @@ import { PlayerService } from '../../services/player-api';
 import { PlayerSessionService } from '../../services/player-session.service';
 import { AdminAnswerStateService } from '../../../admin/services/admin-answer-state.service';
 import { SocketService } from '../../../core/services/socket/socker.service';
-import { environment } from '../../../../environments/enironment';
+import { environment } from '../../../../environments/environment';
 import { Router } from '@angular/router';
 
 @Component({
@@ -15,9 +15,6 @@ import { Router } from '@angular/router';
   imports: [CommonModule, FormsModule],
   templateUrl: './player-answer.html',
   styleUrl: './player-answer.scss',
-  host: {
-    ngSkipHydration: 'true',
-  },
 })
 export class PlayerAnswerComponent implements OnInit, OnDestroy {
   private readonly changeDetectorRef = inject(ChangeDetectorRef);

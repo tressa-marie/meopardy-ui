@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { GameBoard } from '../../../models/board';
 import { Clue } from '../../../models/clue';
 import { GameService } from '../../services/game-api';
-import { environment } from '../../../../environments/enironment';
+import { environment } from '../../../../environments/environment';
 import { finalize, timeout } from 'rxjs/operators';
 import { SocketService } from '../../../core/services/socket/socker.service';
 import { AdminAnswerStateService } from '../../../admin/services/admin-answer-state.service';
@@ -14,9 +14,6 @@ import { AdminAnswerStateService } from '../../../admin/services/admin-answer-st
   imports: [CommonModule],
   templateUrl: './game-board-component.component.html',
   styleUrl: './game-board-component.component.scss',
-  host: {
-    ngSkipHydration: 'true',
-  },
 })
 
 export class GameBoardComponentComponent implements OnInit {
@@ -32,6 +29,7 @@ export class GameBoardComponentComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('[GameBoardComponent] ngOnInit', { gameId: this.gameId });
+    this.socketService.joinGame(this.gameId);
     this.gameService.getGameBoard(this.gameId)
       .pipe(
         timeout(10000),

@@ -4,7 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { PlayerService } from '../../services/player-api';
 import { SocketService } from '../../../core/services/socket/socker.service';
-import { environment } from '../../../../environments/enironment';
+import { environment } from '../../../../environments/environment';
 import { PlayerSessionService } from '../../services/player-session.service';
 
 @Component({

@@ -4,33 +4,37 @@ import { AdminAnswerStateService } from '../../services/admin-answer-state.servi
 import { SubmittedAnswer } from '../../models/submitted-answer';
 import { Clue } from '../../../models/clue';
 import { SocketService } from '../../../core/services/socket/socker.service';
-import { environment } from '../../../../environments/enironment';
+import { environment } from '../../../../environments/environment';
 import { Player } from '../../../models/player';
 import { PlayerService } from '../../../player/services/player-api';
 import { Subject, timer } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
+import { FormsModule } from '@angular/forms';
+import { ThemeName, ThemeService } from '../../../core/services/theme/theme.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-answer-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './admin-answer-dashboard.html',
   styleUrl: './admin-answer-dashboard.scss',
-  host: {
-    ngSkipHydration: 'true',
-  },
 })
 export class AdminAnswerDashboardComponent implements OnInit, OnDestroy {
   private readonly adminAnswerStateService = inject(AdminAnswerStateService);
   private readonly socketService = inject(SocketService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly playerService = inject(PlayerService);
+  private readonly themeService = inject(ThemeService);
+  private readonly router = inject(Router);
   private readonly gameId = environment.gameId;
   private readonly destroy$ = new Subject<void>();
 
   selectedClue?: Clue;
   submittedAnswers: SubmittedAnswer[] = [];
   players: Player[] = [];
+  readonly themes = this.themeService.getThemes();
+  selectedTheme: ThemeName = this.themeService.getSavedTheme();
 
   ngOnInit(): void {
     console.log('[AdminAnswerDashboardComponent] ngOnInit', { gameId: this.gameId });
@@ -88,6 +92,17 @@ export class AdminAnswerDashboardComponent implements OnInit, OnDestroy {
   setAnswerCorrectness(answer: SubmittedAnswer, isCorrect: boolean): void {
     this.adminAnswerStateService.updateAnswerCorrectness(answer, isCorrect);
     this.refreshView();
+  }
+
+  onThemeChange(theme: ThemeName): void {
+    this.selectedTheme = theme;
+    this.themeService.setTheme(theme);
+    this.socketService.setTheme(this.gameId, theme);
+    void this.router.navigate([], {
+      queryParams: { theme },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   private refreshView(): void {

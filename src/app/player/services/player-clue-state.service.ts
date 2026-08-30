@@ -13,6 +13,11 @@ export class PlayerClueStateService {
   setSelectedClue(clue: Clue): void {
     this.selectedClue = clue;
     this.questionShownAt = Date.now();
+
+    if (!this.hasStorage()) {
+      return;
+    }
+
     localStorage.setItem(this.clueStorageKey, JSON.stringify(clue));
     localStorage.setItem(this.shownAtStorageKey, this.questionShownAt.toString());
   }
@@ -20,6 +25,10 @@ export class PlayerClueStateService {
   getSelectedClue(): Clue | undefined {
     if (this.selectedClue) {
       return this.selectedClue;
+    }
+
+    if (!this.hasStorage()) {
+      return undefined;
     }
 
     const rawClue = localStorage.getItem(this.clueStorageKey);
@@ -39,6 +48,10 @@ export class PlayerClueStateService {
   getQuestionShownAt(): number {
     if (this.questionShownAt) {
       return this.questionShownAt;
+    }
+
+    if (!this.hasStorage()) {
+      return Date.now();
     }
 
     const rawShownAt = localStorage.getItem(this.shownAtStorageKey);
@@ -62,7 +75,16 @@ export class PlayerClueStateService {
   clearSelectedClue(): void {
     this.selectedClue = undefined;
     this.questionShownAt = undefined;
+
+    if (!this.hasStorage()) {
+      return;
+    }
+
     localStorage.removeItem(this.clueStorageKey);
     localStorage.removeItem(this.shownAtStorageKey);
+  }
+
+  private hasStorage(): boolean {
+    return typeof localStorage !== 'undefined';
   }
 }

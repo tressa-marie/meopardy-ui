@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { SocketService } from '../../../core/services/socket/socker.service';
-import { environment } from '../../../../environments/enironment';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-player-join-confirmation',

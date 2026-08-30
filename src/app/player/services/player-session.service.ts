@@ -8,10 +8,18 @@ export class PlayerSessionService {
   private readonly storageKey = 'meopardy-player';
 
   savePlayer(player: Player): void {
+    if (!this.hasStorage()) {
+      return;
+    }
+
     localStorage.setItem(this.storageKey, JSON.stringify(player));
   }
 
   getPlayer(): Player | undefined {
+    if (!this.hasStorage()) {
+      return undefined;
+    }
+
     const rawPlayer = localStorage.getItem(this.storageKey);
 
     if (!rawPlayer) {
@@ -28,5 +36,9 @@ export class PlayerSessionService {
 
   getPlayerId(): number | undefined {
     return this.getPlayer()?.id;
+  }
+
+  private hasStorage(): boolean {
+    return typeof localStorage !== 'undefined';
   }
 }

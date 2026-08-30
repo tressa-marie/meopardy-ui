@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { environment } from '../../../../environments/enironment';
+import { environment } from '../../../../environments/environment';
 import { Player } from '../../../models/player';
 import { PlayerService } from '../../../player/services/player-api';
 import { SocketService } from '../../../core/services/socket/socker.service';
@@ -14,9 +14,6 @@ import { switchMap, takeUntil } from 'rxjs/operators';
   imports: [CommonModule],
   templateUrl: './player-lobby-component.html',
   styleUrl: './player-lobby-component.scss',
-  host: {
-    ngSkipHydration: 'true',
-  },
 })
 export class PlayerLobbyComponent implements OnInit, OnDestroy {
   private readonly changeDetectorRef = inject(ChangeDetectorRef);

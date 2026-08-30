@@ -1,9 +1,10 @@
 import { Injectable, NgZone, inject } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { Player } from '../../../models/player';
-import { environment } from '../../../../environments/enironment';
+import { environment } from '../../../../environments/environment';
 import { Clue } from '../../../models/clue';
 import { SubmittedAnswer } from '../../../admin/models/submitted-answer';
+import { ThemeName } from '../theme/theme.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,7 @@ import { SubmittedAnswer } from '../../../admin/models/submitted-answer';
 export class SocketService {
   private readonly socket: Socket;
   private readonly ngZone = inject(NgZone);
-  private readonly serverUrl = environment.apiUrl.replace(/\/api$/, '');
+  private readonly serverUrl = environment.socketUrl;
 
   constructor() {
     this.socket = io(this.serverUrl);
@@ -46,6 +47,11 @@ export class SocketService {
     this.socket.emit('game:start', { gameId });
   }
 
+  setTheme(gameId: number, theme: ThemeName): void {
+    console.log('[SocketService] emit game:themeChanged', { gameId, theme });
+    this.socket.emit('game:themeChanged', { gameId, theme });
+  }
+
   selectClue(gameId: number, clue: Clue): void {
     console.log('[SocketService] emit game:clueSelected', { gameId, clue });
     this.socket.emit('game:clueSelected', { gameId, clue });
@@ -74,6 +80,19 @@ export class SocketService {
     this.socket.on('game:started', () => {
       console.log('[SocketService] received game:started');
       this.ngZone.run(() => callback());
+    });
+  }
+
+  onThemeChanged(callback: (theme: ThemeName) => void): void {
+    this.socket.off('game:themeChanged');
+    this.socket.on('game:themeChanged', (payload: { theme?: ThemeName } | ThemeName) => {
+      const theme = this.extractTheme(payload);
+      if (!theme) {
+        console.log('[SocketService] received game:themeChanged with no theme payload', { payload });
+        return;
+      }
+      console.log('[SocketService] received game:themeChanged', { theme });
+      this.ngZone.run(() => callback(theme));
     });
   }
 
@@ -119,6 +138,10 @@ export class SocketService {
     this.socket.off('game:started');
   }
 
+  offThemeChanged(): void {
+    this.socket.off('game:themeChanged');
+  }
+
   offClueSelected(): void {
     this.socket.off('game:clueSelected');
   }
@@ -149,6 +172,19 @@ export class SocketService {
 
   private hasAnswerWrapper(payload: { answer?: SubmittedAnswer } | SubmittedAnswer): payload is { answer?: SubmittedAnswer } {
     return typeof payload === 'object' && payload !== null && 'answer' in payload;
+  }
+
+  private extractTheme(payload: { theme?: ThemeName } | ThemeName): ThemeName | undefined {
+    const candidate = this.hasThemeWrapper(payload) ? payload.theme : payload;
+    return this.isThemeName(candidate) ? candidate : undefined;
+  }
+
+  private hasThemeWrapper(payload: { theme?: ThemeName } | ThemeName): payload is { theme?: ThemeName } {
+    return typeof payload === 'object' && payload !== null && 'theme' in payload;
+  }
+
+  private isThemeName(value: unknown): value is ThemeName {
+    return value === 'classic' || value === 'pastel-holiday';
   }
 
   private normalizeClue(candidate: unknown): Clue | undefined {

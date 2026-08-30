@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
-:root {
+:root,
+:root[data-theme='classic'] {
   --theme-bg-radial: rgba(255, 215, 106, 0.18);
   --theme-bg-start: #071a44;
   --theme-bg-end: #0b2763;
@@ -38,6 +39,46 @@
 
   --theme-shadow-lg: 0 1.5rem 4rem rgba(0, 0, 0, 0.3);
   --theme-shadow-md: 0 0.75rem 2rem rgba(0, 0, 0, 0.25);
+}
+
+:root[data-theme='pastel-holiday'] {
+  --theme-bg-radial: rgba(244, 224, 155, 0.26);
+  --theme-bg-start: #cbdfbd;
+  --theme-bg-end: #d4e09b;
+
+  --theme-surface: rgba(246, 244, 210, 0.96);
+  --theme-surface-strong: rgba(246, 244, 210, 0.94);
+  --theme-surface-muted: rgba(203, 223, 189, 0.72);
+  --theme-surface-dark: rgba(203, 223, 189, 0.94);
+  --theme-surface-dark-muted: rgba(203, 223, 189, 0.86);
+  --theme-overlay: rgba(164, 74, 63, 0.55);
+
+  --theme-border: #a44a3f;
+  --theme-border-strong: rgba(164, 74, 63, 0.82);
+  --theme-border-muted: rgba(164, 74, 63, 0.66);
+  --theme-border-subtle: rgba(164, 74, 63, 0.54);
+  --theme-border-soft: rgba(164, 74, 63, 0.38);
+
+  --theme-text-primary: #a44a3f;
+  --theme-text-secondary: #7b5a4e;
+  --theme-text-accent: #f19c79;
+  --theme-text-on-accent: #6b3128;
+  --theme-text-success: #6f8f5f;
+  --theme-text-danger: #a44a3f;
+  --theme-text-error: #a44a3f;
+  --theme-text-placeholder: rgba(164, 74, 63, 0.5);
+
+  --theme-button-bg: #f19c79;
+  --theme-button-border: #a44a3f;
+  --theme-button-text: #6b3128;
+
+  --theme-input-bg: #f6f4d2;
+  --theme-input-border: #a44a3f;
+  --theme-input-text: #a44a3f;
+  --theme-input-outline: rgba(241, 156, 121, 0.34);
+
+  --theme-shadow-lg: 0 1.5rem 4rem rgba(164, 74, 63, 0.18);
+  --theme-shadow-md: 0 0.75rem 2rem rgba(164, 74, 63, 0.15);
 }
 
 html,

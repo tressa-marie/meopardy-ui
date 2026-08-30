@@ -4,6 +4,19 @@
       <p class="eyebrow">Admin Dashboard</p>
       <h1>Submitted Answers</h1>
 
+      <section class="theme-card" aria-label="Theme selector">
+        <label class="section-label" for="theme-select">Theme</label>
+        <select
+          id="theme-select"
+          class="theme-select"
+          [(ngModel)]="selectedTheme"
+          (ngModelChange)="onThemeChange($event)">
+          @for (theme of themes; track theme) {
+            <option [ngValue]="theme">{{ theme }}</option>
+          }
+        </select>
+      </section>
+
       <section class="question-card" aria-label="Currently selected question">
         <p class="section-label">Current Question</p>
         @if (selectedClue) {
