@@ -4,12 +4,25 @@
     <h1>{{ game.state()?.status === 'finished' ? 'Game Finished' : 'Waiting For The Next Question' }}</h1>
     @if (!game.synchronized()) { <p role="status">Reconnecting and restoring your game…</p> }
     @if (game.error()) { <p role="alert">{{ game.error() }}</p><a routerLink="/join">Rejoin game</a> }
-    @if (game.state()?.status === 'finished') {
-      <ol aria-label="Final scores">
-        @for (player of game.state()?.standings; track player.id) {
-          <li>{{ player.rank }}. {{ player.name }} — {{ player.score }}</li>
-        }
-      </ol>
+    @if (playerStanding(); as standing) {
+      <section class="player-score-card" aria-label="Your game standing" aria-live="polite" aria-atomic="true">
+        <p class="score-player-name">{{ standing.name }}</p>
+        <dl class="player-stats">
+          <div>
+            <dt>{{ game.state()?.status === 'finished' ? 'Your final score' : 'Your score' }}</dt>
+            <dd class="score-value">{{ standing.score | number:'1.0-0' }}</dd>
+          </div>
+          <div>
+            <dt>Your rank</dt>
+            <dd class="rank-value">
+              {{ standing.tied ? 'Tied ' : '' }}#{{ standing.rank }}
+              <span class="rank-total">of {{ standing.totalPlayers }}</span>
+            </dd>
+          </div>
+        </dl>
+      </section>
+    } @else if (game.synchronized()) {
+      <p class="player-board-message" role="status">Loading your score…</p>
     }
     <p class="player-board-message">
       {{ game.state()?.status === 'finished' ? 'Thanks for playing!' : 'The selected clue will appear as soon as the host picks a square.' }}

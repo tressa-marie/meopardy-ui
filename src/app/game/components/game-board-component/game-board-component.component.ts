@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Clue } from '../../../models/clue';
 import { SocketService } from '../../../core/services/socket/socker.service';
@@ -13,6 +13,8 @@ export class GameBoardComponentComponent implements OnInit {
   readonly game = inject(SocketService);
   readonly busy = signal(false);
   readonly errorMessage = signal('');
+  readonly clueRows = computed(() => Math.max(1,
+    ...(this.game.state()?.categories.map(category => category.clues.length) ?? [])));
 
   ngOnInit(): void { this.game.joinGame(this.gameId); }
   get board() { return this.game.state(); }

@@ -1,6 +1,15 @@
 <main class="app-screen app-screen--centered join-confirmation-screen">
-    <h2>You're In!</h2>
-    <p>Sit tight. Your host will start the game soon.</p>
-    @if (!game.synchronized()) { <p role="status">Restoring your game session…</p> }
-    @if (game.error()) { <p role="alert">{{ game.error() }}</p><a routerLink="/join">Rejoin game</a> }
+  <section class="confirmation-card" aria-labelledby="confirmation-heading">
+    <div class="holiday-art" aria-hidden="true">
+      <img class="holiday-illustration" src="images/pastel-christmas-tree.png" alt="" width="1312" height="1199" />
+    </div>
+    <p class="eyebrow">Let the festivities begin</p>
+    <h1 id="confirmation-heading">You're In!</h1>
+    <p class="confirmation-message">Sit tight. Your host will start the game soon.</p>
+    @if (!game.synchronized()) { <p class="session-status" role="status">Restoring your game session…</p> }
+    @if (game.error()) {
+      <p class="session-error" role="alert">{{ game.error() }}</p>
+      <a class="rejoin-link" routerLink="/join">Rejoin game</a>
+    }
+  </section>
 </main>

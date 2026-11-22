@@ -7,13 +7,15 @@
 }
 
 @if (board) {
-  <main class="app-screen game-board">
-    <h1>{{ board.title }}</h1>
-    @if (board.status === 'setup') {
-      <p>Start the game from the <a [routerLink]="['/admin-lobby', gameId]">player lobby</a>.</p>
-    }
-    @if (board.status === 'finished') { <h2>Game finished</h2> }
-    @if (!game.synchronized()) { <p role="status">Reconnecting and restoring the game…</p> }
+  <main class="app-screen game-board" [style.--category-count]="board.categories.length || 1" [style.--clue-rows]="clueRows()">
+    <header class="game-board-header">
+      <h1>{{ board.title }}</h1>
+      @if (board.status === 'setup') {
+        <p>Start the game from the <a [routerLink]="['/admin-lobby', gameId]">player lobby</a>.</p>
+      }
+      @if (board.status === 'finished') { <h2>Game finished</h2> }
+      @if (!game.synchronized()) { <p role="status">Reconnecting and restoring the game…</p> }
+    </header>
 
     <section class="grid">
       @for (category of board.categories; track category.id) {

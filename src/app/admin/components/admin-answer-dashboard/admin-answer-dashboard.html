@@ -7,20 +7,6 @@
       @if (errorMessage() || game.error()) { <p role="alert">{{ errorMessage() || game.error() }}</p> }
       @if (!game.synchronized()) { <p role="status">Restoring the game…</p> }
 
-      <section class="theme-card" aria-label="Theme selector">
-        <label class="section-label" for="theme-select">Theme</label>
-        <select
-          id="theme-select"
-          class="theme-select"
-          [ngModel]="selectedTheme()"
-          [disabled]="changingTheme() || !game.synchronized()"
-          (ngModelChange)="onThemeChange($event)">
-          @for (theme of themes; track theme) {
-            <option [ngValue]="theme">{{ theme }}</option>
-          }
-        </select>
-      </section>
-
       <section class="question-card" aria-label="Currently selected question">
         <p class="section-label">Current Question</p>
         @if (selectedClue) {
@@ -84,25 +70,44 @@
       </section>
     </section>
 
-    <aside class="scoreboard-panel" aria-label="Player scores">
-      <p class="eyebrow">Scoreboard</p>
-      <h2>Game Scores</h2>
+    <aside class="dashboard-sidebar" aria-label="Game scores and settings">
+      <section class="scoreboard-panel" aria-label="Player scores">
+        <p class="eyebrow">Scoreboard</p>
+        <h2>Game Scores</h2>
 
-      @if (players.length > 0) {
-        <ol class="scoreboard-list">
-          @for (player of players; track player.id; let index = $index) {
-            <li class="score-row">
-              <div class="score-rank-name">
-                <span class="score-rank">{{ index + 1 }}</span>
-                <span class="score-name">{{ player.name }}</span>
-              </div>
-              <span class="score-value">{{ player.score }}</span>
-            </li>
-          }
-        </ol>
-      } @else {
-        <p class="empty-state">No players have joined yet.</p>
-      }
+        @if (players.length > 0) {
+          <ol class="scoreboard-list">
+            @for (player of players; track player.id; let index = $index) {
+              <li class="score-row">
+                <div class="score-rank-name">
+                  <span class="score-rank">{{ index + 1 }}</span>
+                  <span class="score-name">{{ player.name }}</span>
+                </div>
+                <span class="score-value">{{ player.score }}</span>
+              </li>
+            }
+          </ol>
+        } @else {
+          <p class="empty-state">No players have joined yet.</p>
+        }
+      </section>
+
+      <section class="settings-panel" aria-labelledby="settings-heading">
+        <h2 id="settings-heading">Settings</h2>
+        <div class="theme-card">
+          <label class="section-label" for="theme-select">Theme</label>
+          <select
+            id="theme-select"
+            class="theme-select"
+            [ngModel]="selectedTheme()"
+            [disabled]="changingTheme() || !game.synchronized()"
+            (ngModelChange)="onThemeChange($event)">
+            @for (theme of themes; track theme) {
+              <option [ngValue]="theme">{{ theme }}</option>
+            }
+          </select>
+        </div>
+      </section>
     </aside>
   </section>
 </main>

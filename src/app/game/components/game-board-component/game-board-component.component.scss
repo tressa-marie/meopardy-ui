@@ -1,42 +1,80 @@
 .game-board {
-  min-height: 100vh;
-  padding: 2rem;
+  --board-gap: clamp(0.25rem, 1vmin, 0.75rem);
+  --board-row-min: 3rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  // Keep the board usable below its minimum; otherwise fill the viewport exactly.
+  min-height: max(36rem, calc((var(--clue-rows, 5) + 1) * var(--board-row-min) + var(--clue-rows, 5) * var(--board-gap) + 10rem));
+  padding: clamp(0.5rem, 1.5vmin, 1.5rem);
+  gap: var(--board-gap);
   background: var(--theme-bg-start);
   color: var(--theme-text-primary);
   text-align: center;
 }
 
+.game-board-header {
+  display: grid;
+  flex-shrink: 0;
+  gap: 0.5rem;
+}
+
+.game-board-header h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 4vmin, 3rem);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.game-board-header p,
+.game-board-header h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 0.75rem;
-  max-width: 1400px;
-  margin: 2rem auto;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  grid-template-columns: repeat(var(--category-count, 6), minmax(0, 1fr));
+  gap: var(--board-gap);
+  margin: 0;
 }
 
 .category-column {
   display: grid;
-  gap: 0.75rem;
+  min-height: 0;
+  min-width: 0;
+  grid-template-rows: minmax(var(--board-row-min), 0.8fr) repeat(var(--clue-rows, 5), minmax(var(--board-row-min), 1fr));
+  gap: var(--board-gap);
 }
 
 .category-header {
-  min-height: 90px;
-  padding: 1rem;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: clamp(0.25rem, 1vmin, 0.75rem);
   display: grid;
   place-items: center;
   background: var(--theme-surface);
   border: 3px solid var(--theme-border);
-  font-size: 1.25rem;
+  font-size: clamp(0.625rem, 1.8vmin, 1.25rem);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
   font-weight: 800;
   text-transform: uppercase;
 }
 
 .clue-tile {
-  min-height: 110px;
+  min-height: 0;
+  min-width: 0;
+  padding: 0.25rem;
   background: var(--theme-surface);
   border: 3px solid var(--theme-border);
   color: var(--theme-text-accent);
-  font-size: 2.25rem;
+  font-size: clamp(0.875rem, 3.5vmin, 2.25rem);
   font-weight: 900;
   cursor: pointer;
 }

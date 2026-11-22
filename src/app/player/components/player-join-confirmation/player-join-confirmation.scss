@@ -1,10 +1,78 @@
 .join-confirmation-screen {
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+  box-sizing: border-box;
+  padding: clamp(1rem, 4vw, 2rem);
   text-align: center;
 }
 
-p {
-  font-size: 20px;
+.confirmation-card {
+  box-sizing: border-box;
+  width: min(100%, 34rem);
+  padding: clamp(1.5rem, 5vw, 3rem);
+  background: var(--theme-surface);
+  border: 3px solid var(--theme-border-soft);
+  border-radius: 1.5rem;
+  box-shadow: var(--theme-shadow-lg);
+}
+
+.holiday-art {
+  display: grid;
+  place-items: center;
+  margin: -0.5rem auto 1.25rem;
+  background: radial-gradient(ellipse at center, rgba(244, 224, 155, 0.16), transparent 68%);
+}
+
+.holiday-illustration {
+  display: block;
+  width: min(100%, 18rem);
+  height: auto;
+  max-height: 34svh;
+  object-fit: contain;
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  color: var(--theme-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15rem;
+  text-transform: uppercase;
+}
+
+.confirmation-card h1 {
+  margin: 0;
+  color: var(--theme-text-primary);
+  font-size: clamp(2.25rem, 7vw, 3.5rem);
+  font-weight: 900;
+}
+
+.confirmation-message {
+  max-width: 24rem;
+  margin: 1rem auto 0;
+  color: var(--theme-text-secondary);
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+.session-status,
+.session-error {
+  margin: 1.25rem 0 0;
+  color: var(--theme-text-secondary);
+  line-height: 1.5;
+}
+
+.session-error {
+  color: var(--theme-text-error);
+}
+
+.rejoin-link {
+  display: inline-block;
+  margin-top: 1rem;
+  color: var(--theme-text-accent);
+  font-weight: 700;
+  text-underline-offset: 0.2rem;
+}
+
+.rejoin-link:focus-visible {
+  outline: 2px solid var(--theme-text-accent);
+  outline-offset: 4px;
 }
