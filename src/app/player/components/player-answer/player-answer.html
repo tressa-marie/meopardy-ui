@@ -1,6 +1,5 @@
 <main class="app-screen app-screen--centered player-answer-screen">
   <section class="player-answer-panel">
-    <p class="eyebrow">Player Answer</p>
     <h1>Submit Your Answer</h1>
     @if (!game.synchronized()) { <p role="status">Reconnecting and restoring your answer…</p> }
     @if (game.error()) { <p role="alert">{{ game.error() }}</p><a routerLink="/join">Rejoin game</a> }

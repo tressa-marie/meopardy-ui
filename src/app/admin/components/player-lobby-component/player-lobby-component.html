@@ -2,7 +2,7 @@
   <section class="lobby-panel">
     <p class="eyebrow">Admin Lobby</p>
     <h1>Players</h1>
-    <a [routerLink]="['/join-code', gameId]">Show join code</a>
+    <a [routerLink]="['/join-code', gameId]" target="_blank" rel="noopener">Show join code</a>
     @if (errorMessage() || game.error()) {
       <p role="alert">{{ errorMessage() || game.error() }}</p>
     }

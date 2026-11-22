@@ -32,7 +32,7 @@ describe('PlayerLobby start confirmation', () => {
     expect(game.startGame).toHaveBeenCalledOnce();
     confirm();
     await pending;
-    expect(navigate).toHaveBeenCalledWith(['/host', 8]);
+    expect(navigate).toHaveBeenCalledWith(['/admin-dashboard', 8]);
   });
 
   it('stays in the lobby when the server rejects starting', async () => {

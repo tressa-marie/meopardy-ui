@@ -1,5 +1,6 @@
-import { ChangeDetectorRef, Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, effect, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { GameService } from '../../services/game-api';
 import { SocketService } from '../../../core/services/socket/socker.service';
 import { injectRouteGameId } from '../../../core/routing/game-id';
@@ -17,6 +18,16 @@ export class JoinGameComponent implements OnInit {
   private readonly gameService = inject(GameService);
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
+
+  constructor() {
+    effect(() => {
+      const state = this.game.state();
+      if (this.game.synchronized() && state?.id === this.gameId && state.status !== 'setup') {
+        void this.router.navigate(['/host', this.gameId], { replaceUrl: true });
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.game.joinGame(this.gameId);

@@ -8,7 +8,7 @@ Angular frontend for a hosted, multiplayer written-answer trivia game. Requires 
 
 1. Start the sibling `meopardy-backend` on port 3000 using its README instructions. Import a game and note its game ID.
 2. Run `npm ci` and `npm start` in this repository. On Windows PowerShell with restricted script execution, use `npm.cmd`.
-3. Open `http://localhost:4200/admin-lobby/<gameId>` for the host and follow **Show join code**. Return to the admin lobby to start the game; its **Start Game** button waits for server confirmation before opening the host board.
+3. Open `http://localhost:4200/admin-lobby/<gameId>` and select **Show join code** to open the display in another tab. Click **Start Game** in the admin lobby: after server confirmation, the lobby opens the admin dashboard and the join-code display automatically switches to the host board. A join-code display opened after the game starts also switches to the host board.
 4. Players open `http://localhost:4200/join` and enter the code and their name. Use separate browsers/profiles for separate players; a browser profile retains one player session.
 5. Open the host board at `/host/<gameId>` and the answer dashboard at `/admin-dashboard/<gameId>` in another tab. Select a clue, monitor submissions and grade on the dashboard, then reveal/close the clue. **Close** completes the clue and advances the saved game. When time expires, submissions close and the answer stays hidden. Click **Reveal Answer** on the question card when ready, or close the clue to skip revealing it.
 

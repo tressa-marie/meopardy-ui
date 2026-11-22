@@ -27,7 +27,7 @@ export class PlayerLobbyComponent {
     this.errorMessage.set('');
     try {
       await this.game.startGame(this.gameId);
-      if (!this.destroyRef.destroyed) await this.router.navigate(['/host', this.gameId]);
+      if (!this.destroyRef.destroyed) await this.router.navigate(['/admin-dashboard', this.gameId]);
     } catch (error) {
       this.errorMessage.set(error instanceof Error ? error.message : 'Could not start the game.');
     } finally { this.starting.set(false); }
