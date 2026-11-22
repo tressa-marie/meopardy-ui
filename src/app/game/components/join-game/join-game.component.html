@@ -6,8 +6,8 @@
   <p class="error">{{ errorMessage }}</p>
 }
 
-@if (actionError() || game.error()) {
-  <p role="alert">{{ actionError() || game.error() }}</p>
+@if (game.error()) {
+  <p role="alert">{{ game.error() }}</p>
 }
 
 @if (joinCode) {
@@ -18,8 +18,5 @@
       <p class="label">Join Code</p>
       <p class="code">{{ joinCode }}</p>
     </section>
-    <button type="button" class="start-button" [disabled]="starting() || !game.synchronized()" (click)="startGame()">
-      {{ starting() ? 'Starting…' : 'Start Game' }}
-    </button>
   </main>
 }

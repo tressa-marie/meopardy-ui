@@ -1,4 +1,4 @@
-import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { injectRouteGameId } from '../../../core/routing/game-id';
 import { SocketService } from '../../../core/services/socket/socker.service';
@@ -17,12 +17,6 @@ export class PlayerLobbyComponent {
 
   constructor() {
     this.game.joinGame(this.gameId);
-    effect(() => {
-      const state = this.game.state();
-      if (this.game.synchronized() && state && state.status !== 'setup') {
-        void this.router.navigate(['/host', this.gameId], { replaceUrl: true });
-      }
-    });
   }
 
   get players() { return this.game.state()?.players ?? []; }

@@ -3,7 +3,7 @@ import { Clue } from './clue';
 import { Player } from './player';
 import { SubmittedAnswer } from '../admin/models/submitted-answer';
 
-export type GamePhase = 'setup' | 'board' | 'clue_open' | 'answering' | 'reveal' | 'finished';
+export type GamePhase = 'setup' | 'board' | 'clue_open' | 'answering' | 'awaiting_reveal' | 'reveal' | 'finished';
 
 export interface GameState extends GameBoard {
   status: GamePhase;

@@ -7,7 +7,7 @@
     @if (game.state()?.status === 'answering') {
       <p role="timer">{{ game.remainingSeconds() }} seconds remaining</p>
     }
-    @if (game.state()?.status === 'reveal' || (game.state()?.status === 'answering' && game.remainingSeconds() === 0)) {
+    @if (game.state()?.status === 'awaiting_reveal' || game.state()?.status === 'reveal' || (game.state()?.status === 'answering' && game.remainingSeconds() === 0)) {
       <p role="status">Answers are closed. Please wait for your host.</p>
     }
     @if (game.state()?.status === 'reveal' && game.state()?.revealedAnswer; as revealedAnswer) {

@@ -28,7 +28,7 @@ export class SocketService implements OnDestroy {
   private readonly answerSnapshot = signal<{ clueId: number | null; answers: SubmittedAnswer[] }>({ clueId: null, answers: [] });
   readonly activeClue = computed(() => {
     const state = this.state();
-    return state && ['clue_open', 'answering', 'reveal'].includes(state.status) ? state.activeClue : null;
+    return state && ['clue_open', 'answering', 'awaiting_reveal', 'reveal'].includes(state.status) ? state.activeClue : null;
   });
   readonly answers = computed(() => this.answerSnapshot().clueId === this.activeClue()?.id
     ? this.answerSnapshot().answers : []);

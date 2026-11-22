@@ -15,7 +15,7 @@ export function bindPlayerGame(): SocketService {
     const state = game.state();
     if (!game.synchronized() || !state || state.id !== gameId) return;
     const target = state.status === 'setup' ? '/join-confirmation'
-      : ['clue_open', 'answering', 'reveal'].includes(state.status) ? '/player-answer' : '/player-board';
+      : ['clue_open', 'answering', 'awaiting_reveal', 'reveal'].includes(state.status) ? '/player-answer' : '/player-board';
     if (router.url.split('?')[0] !== target) void router.navigate([target], { replaceUrl: true });
   });
   return game;

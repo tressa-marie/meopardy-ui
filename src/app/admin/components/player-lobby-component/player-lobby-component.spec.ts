@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
 import { PlayerLobbyComponent } from './player-lobby-component';
 import { SocketService } from '../../../core/services/socket/socker.service';
@@ -7,6 +7,7 @@ import { gameStub, makeState } from '../../../testing/game-fixtures';
 describe('PlayerLobby start confirmation', () => {
   let game: ReturnType<typeof gameStub>;
   let component: PlayerLobbyComponent;
+  let fixture: ComponentFixture<PlayerLobbyComponent>;
   let navigate: ReturnType<typeof vi.spyOn>;
   beforeEach(() => {
     game = gameStub(makeState({ status: 'setup' }));
@@ -15,7 +16,8 @@ describe('PlayerLobby start confirmation', () => {
       { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ gameId: '8' }) } } },
     ] });
     navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
-    component = TestBed.createComponent(PlayerLobbyComponent).componentInstance;
+    fixture = TestBed.createComponent(PlayerLobbyComponent);
+    component = fixture.componentInstance;
   });
 
   it('waits for confirmation and prevents a second start while pending', async () => {
@@ -23,6 +25,9 @@ describe('PlayerLobby start confirmation', () => {
     game.startGame.mockImplementation(() => new Promise<void>(resolve => confirm = resolve));
     const pending = component.startGame();
     await component.startGame();
+    // A state broadcast may arrive before the start acknowledgment.
+    game.state.set(makeState({ status: 'board' }));
+    fixture.detectChanges();
     expect(navigate).not.toHaveBeenCalled();
     expect(game.startGame).toHaveBeenCalledOnce();
     confirm();

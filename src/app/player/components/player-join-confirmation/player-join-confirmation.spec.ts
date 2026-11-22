@@ -17,12 +17,12 @@ describe('Player phase recovery', () => {
     ] });
   });
 
-  it('joins the saved game and recovers a clue missed while disconnected', async () => {
+  it.each(['answering', 'awaiting_reveal'] as const)('recovers a missed clue in phase %s', async status => {
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const fixture = TestBed.createComponent(PlayerJoinConfirmationComponent);
     fixture.detectChanges();
     expect(game.joinPlayerGame).toHaveBeenCalledWith(8);
-    game.state.set(makeState({ status: 'answering', activeClue: clue }));
+    game.state.set(makeState({ status, activeClue: clue }));
     fixture.detectChanges();
     expect(navigate).toHaveBeenLastCalledWith(['/player-answer'], { replaceUrl: true });
   });

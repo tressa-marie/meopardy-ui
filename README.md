@@ -8,9 +8,9 @@ Angular frontend for a hosted, multiplayer written-answer trivia game. Requires 
 
 1. Start the sibling `meopardy-backend` on port 3000 using its README instructions. Import a game and note its game ID.
 2. Run `npm ci` and `npm start` in this repository. On Windows PowerShell with restricted script execution, use `npm.cmd`.
-3. Open `http://localhost:4200/admin-lobby/<gameId>` for the host and follow **Show join code**. Both Start buttons wait for server confirmation.
+3. Open `http://localhost:4200/admin-lobby/<gameId>` for the host and follow **Show join code**. Return to the admin lobby to start the game; its **Start Game** button waits for server confirmation before opening the host board.
 4. Players open `http://localhost:4200/join` and enter the code and their name. Use separate browsers/profiles for separate players; a browser profile retains one player session.
-5. Open the host board at `/host/<gameId>` and its **Open answer dashboard** link in another tab. Select a clue, monitor submissions and grade on the dashboard, then reveal/close the clue. **Close** and **Mark Answered** both complete the clue and advance the saved game. Revealing locks answers; the server also reveals automatically when time expires.
+5. Open the host board at `/host/<gameId>` and the answer dashboard at `/admin-dashboard/<gameId>` in another tab. Select a clue, monitor submissions and grade on the dashboard, then reveal/close the clue. **Close** completes the clue and advances the saved game. When time expires, submissions close and the answer stays hidden. Click **Reveal Answer** on the question card when ready, or close the clue to skip revealing it.
 
 The root URL defaults to the configured game ID (currently 8). Change `src/environments/environment.ts` for local API/socket URLs and `environment.production.ts` for deployed URLs. Production hosting must serve `index.html` for Angular routes.
 
@@ -24,7 +24,7 @@ The root URL defaults to the configured game ID (currently 8). Change `src/envir
 - Player submissions use `game:answerSubmitted { clueId, submittedAnswer }` on the session-authenticated socket. The backend supplies identity, elapsed time, duplicate protection, persistence, scoring, and broadcasts. The frontend never sends client elapsed times or rebroadcasts accepted answers. A timeout triggers recovery before retrying.
 - Grading uses `PATCH /api/answers/:answerId/override { isCorrect }`. The server saves the judgment and adjusts the score delta, then broadcasts updated snapshots. Failed saves do not optimistically change the displayed judgment.
 - Public clue models and selection messages contain no answer key. Answer text appears only in the server's revealed state. Legacy cached clue/answer keys are removed from local storage.
-- Countdown display uses the server's clock offset and deadline. The server enforces the actual acceptance window; browser timing never determines awarded points.
+- Countdown display uses the server's clock offset and deadline. The server enforces the actual acceptance window; browser timing never determines awarded points. At the deadline, the saved phase becomes `awaiting_reveal`. Host and player cards keep the question visible with submissions disabled; only the host's explicit **Reveal Answer** action discloses the answer. Refreshing, reconnecting, or restarting the server preserves this hidden state. Deploy the matching backend changes together with this frontend.
 
 The backend currently documents host authentication as unfinished: admin room joins and grading endpoints still require server-side authorization before a public release. Frontend filtering cannot provide that protection.
 

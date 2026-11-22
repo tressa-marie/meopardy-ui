@@ -42,30 +42,6 @@
   letter-spacing: 0.35rem;
 }
 
-.start-button {
-  margin-top: 2rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 220px;
-  padding: 0.95rem 1.5rem;
-  background: var(--theme-button-bg);
-  border: 3px solid var(--theme-button-border);
-  border-radius: 999px;
-  color: var(--theme-button-text);
-  font-size: 1rem;
-  font-weight: 900;
-  letter-spacing: 0.08rem;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: var(--theme-shadow-md);
-}
-
-.start-button:hover {
-  transform: translateY(-2px);
-}
-
 .error {
   color: var(--theme-text-error);
 }

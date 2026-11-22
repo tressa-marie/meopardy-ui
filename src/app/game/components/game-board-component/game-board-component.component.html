@@ -9,7 +9,6 @@
 @if (board) {
   <main class="app-screen game-board">
     <h1>{{ board.title }}</h1>
-    <a [routerLink]="['/admin-dashboard', gameId]" target="_blank" rel="noopener">Open answer dashboard</a>
     @if (board.status === 'setup') {
       <p>Start the game from the <a [routerLink]="['/admin-lobby', gameId]">player lobby</a>.</p>
     }
@@ -51,15 +50,17 @@
       @if (game.state()?.status === 'answering') {
         <p role="timer">{{ game.remainingSeconds() }} seconds remaining</p>
       }
+      @if (game.state()?.status === 'awaiting_reveal' || (game.state()?.status === 'answering' && game.remainingSeconds() === 0)) {
+        <p role="status">Time is up. Answers are closed. Reveal the answer when you are ready.</p>
+      }
       @if (game.state()?.revealedAnswer; as revealedAnswer) {
         <p>Answer: {{ revealedAnswer }}</p>
       }
       @if (errorMessage()) { <p class="error" role="alert">{{ errorMessage() }}</p> }
 
       <div class="modal-actions">
-        <button type="button" [disabled]="busy() || !game.synchronized() || game.state()?.status === 'reveal'" (click)="revealAnswer()">Reveal answer</button>
-        <button type="button" [disabled]="busy() || !game.synchronized()" (click)="closeClue()">Close</button>
-        <button type="button" [disabled]="busy() || !game.synchronized()" (click)="markAnswered()">{{ busy() ? 'Saving…' : 'Mark Answered' }}</button>
+        <button type="button" [disabled]="busy() || !game.synchronized() || game.state()?.status === 'reveal'" (click)="revealAnswer()">Reveal Answer</button>
+        <button type="button" class="modal-action--secondary" [disabled]="busy() || !game.synchronized()" (click)="closeClue()">Close</button>
       </div>
     </section>
   </div>

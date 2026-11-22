@@ -49,6 +49,17 @@ describe('Player answer lifecycle', () => {
     expect(game.submitAnswer).not.toHaveBeenCalled();
   });
 
+  it('shows the expired question without revealing or allowing another answer', async () => {
+    game.state.set(makeState({ status: 'awaiting_reveal', activeClue: clue }));
+    game.acceptingAnswers.set(false);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Answers are closed');
+    expect(fixture.nativeElement.textContent).toContain(clue.question);
+    expect(fixture.nativeElement.querySelector('.submit-button').disabled).toBe(true);
+    expect(fixture.nativeElement.textContent).not.toContain('Answer:');
+    expect(game.revealClue).not.toHaveBeenCalled();
+  });
+
   it('does not mark a new clue submitted when an old response arrives', async () => {
     let accept!: () => void;
     game.submitAnswer.mockImplementation(() => new Promise<void>(resolve => accept = resolve));

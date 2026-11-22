@@ -20,7 +20,7 @@ export function gameStub(initial = makeState()) {
   const state = signal<GameState | null>(initial);
   const activeClue = computed(() => {
     const value = state();
-    return value && ['clue_open', 'answering', 'reveal'].includes(value.status) ? value.activeClue : null;
+    return value && ['clue_open', 'answering', 'awaiting_reveal', 'reveal'].includes(value.status) ? value.activeClue : null;
   });
   return {
     state, activeClue, connected: signal(true), synchronized: signal(true), error: signal(''),

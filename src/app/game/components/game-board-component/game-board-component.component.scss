@@ -82,9 +82,65 @@
 
 .modal-actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 1rem;
   margin-top: 2rem;
+}
+
+.modal-actions button {
+  box-sizing: border-box;
+  min-width: min(12rem, 100%);
+  max-width: 100%;
+  min-height: 3rem;
+  padding: 0.95rem 1.5rem;
+  background: var(--theme-button-bg);
+  border: 3px solid var(--theme-button-border);
+  border-radius: 999px;
+  color: var(--theme-button-text);
+  font: inherit;
+  font-weight: 900;
+  letter-spacing: 0.08rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: var(--theme-shadow-md);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.modal-actions .modal-action--secondary {
+  background: var(--theme-surface-dark);
+  color: var(--theme-text-primary);
+}
+
+.modal-actions button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--theme-shadow-lg);
+}
+
+.modal-actions button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.modal-actions button:focus-visible {
+  outline: 3px solid var(--theme-text-accent);
+  outline-offset: 4px;
+}
+
+.modal-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-actions button {
+    transition: none;
+  }
+
+  .modal-actions button:hover:not(:disabled) {
+    transform: none;
+  }
 }
 
 .error {

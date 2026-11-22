@@ -29,9 +29,6 @@ export class GameBoardComponentComponent implements OnInit {
     if (clueId) await this.perform(() => this.game.closeClue(this.gameId, clueId));
   }
 
-  // Both close paths use the same persisted, acknowledged server transition.
-  async markAnswered(): Promise<void> { await this.closeClue(); }
-
   async revealAnswer(): Promise<void> {
     const clueId = this.selectedClue?.id;
     if (clueId) await this.perform(() => this.game.revealClue(this.gameId, clueId));

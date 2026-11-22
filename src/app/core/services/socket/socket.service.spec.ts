@@ -96,6 +96,18 @@ describe('SocketService game recovery and commands', () => {
     expect(service.state()?.status).toBe('board');
   });
 
+  it('keeps the question and saved submissions visible while awaiting a manual reveal', async () => {
+    service.joinGame(8);
+    await settle();
+    socket.receive('game:state', makeState({ status: 'answering', activeClue: clue }));
+    socket.receive('game:answers', { gameId: 8, clueId: 1, answers: [answer] });
+    socket.receive('game:state', makeState({ status: 'awaiting_reveal', activeClue: clue }));
+    expect(service.activeClue()?.id).toBe(1);
+    expect(service.answers()).toHaveLength(1);
+    expect(service.state()?.revealedAnswer).toBeNull();
+    expect(service.acceptingAnswers()).toBe(false);
+  });
+
   it('does not remove other theme listeners when unsubscribing', () => {
     const first = vi.fn();
     const second = vi.fn();
