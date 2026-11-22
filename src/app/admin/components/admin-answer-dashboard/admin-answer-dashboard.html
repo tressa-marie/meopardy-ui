@@ -3,13 +3,17 @@
     <section class="admin-answer-dashboard-panel">
       <p class="eyebrow">Admin Dashboard</p>
       <h1>Submitted Answers</h1>
+      <a [routerLink]="['/host', gameId]">Back to board</a>
+      @if (errorMessage() || game.error()) { <p role="alert">{{ errorMessage() || game.error() }}</p> }
+      @if (!game.synchronized()) { <p role="status">Restoring the game…</p> }
 
       <section class="theme-card" aria-label="Theme selector">
         <label class="section-label" for="theme-select">Theme</label>
         <select
           id="theme-select"
           class="theme-select"
-          [(ngModel)]="selectedTheme"
+          [ngModel]="selectedTheme()"
+          [disabled]="changingTheme() || !game.synchronized()"
           (ngModelChange)="onThemeChange($event)">
           @for (theme of themes; track theme) {
             <option [ngValue]="theme">{{ theme }}</option>
@@ -31,7 +35,7 @@
         <p class="section-label">Player Answers</p>
         @if (submittedAnswers.length > 0) {
           <ul class="answers-list">
-            @for (answer of submittedAnswers; track $index) {
+            @for (answer of submittedAnswers; track answer.id) {
               <li class="answer-row">
                 <div class="answer-copy">
                   <p class="player-name">{{ answer.playerName || ('Player #' + answer.playerId) }}</p>
@@ -56,6 +60,7 @@
                     <button
                       type="button"
                       class="toggle-button"
+                      [disabled]="gradingIds().has(answer.id) || !game.synchronized()"
                       [class.toggle-button--active]="answer.isCorrect === true"
                       (click)="setAnswerCorrectness(answer, true)">
                       Correct
@@ -63,6 +68,7 @@
                     <button
                       type="button"
                       class="toggle-button"
+                      [disabled]="gradingIds().has(answer.id) || !game.synchronized()"
                       [class.toggle-button--active]="answer.isCorrect === false"
                       (click)="setAnswerCorrectness(answer, false)">
                       Incorrect

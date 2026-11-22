@@ -1,132 +1,66 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { AdminAnswerStateService } from '../../services/admin-answer-state.service';
+import { Component, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { SubmittedAnswer } from '../../models/submitted-answer';
-import { Clue } from '../../../models/clue';
 import { SocketService } from '../../../core/services/socket/socker.service';
 import { injectRouteGameId } from '../../../core/routing/game-id';
-import { Player } from '../../../models/player';
 import { PlayerService } from '../../../player/services/player-api';
-import { Subject, timer } from 'rxjs';
-import { switchMap, takeUntil } from 'rxjs/operators';
-import { FormsModule } from '@angular/forms';
 import { ThemeName, ThemeService } from '../../../core/services/theme/theme.service';
-import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-admin-answer-dashboard',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './admin-answer-dashboard.html',
-  styleUrl: './admin-answer-dashboard.scss',
+  selector: 'app-admin-answer-dashboard', standalone: true, imports: [FormsModule, RouterLink],
+  templateUrl: './admin-answer-dashboard.html', styleUrl: './admin-answer-dashboard.scss',
 })
-export class AdminAnswerDashboardComponent implements OnInit, OnDestroy {
-  private readonly adminAnswerStateService = inject(AdminAnswerStateService);
-  private readonly socketService = inject(SocketService);
-  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+export class AdminAnswerDashboardComponent {
+  readonly game = inject(SocketService);
+  readonly gameId = injectRouteGameId();
   private readonly playerService = inject(PlayerService);
   private readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
-  private readonly gameId = injectRouteGameId();
-  private readonly destroy$ = new Subject<void>();
-
-  selectedClue?: Clue;
-  submittedAnswers: SubmittedAnswer[] = [];
-  players: Player[] = [];
   readonly themes = this.themeService.getThemes();
-  selectedTheme: ThemeName = this.themeService.getSavedTheme();
+  readonly selectedTheme = signal(this.themeService.getSavedTheme());
+  readonly gradingIds = signal<Set<number>>(new Set());
+  readonly errorMessage = signal('');
+  readonly changingTheme = signal(false);
+  readonly sortedPlayers = computed(() => [...(this.game.state()?.players ?? [])]
+    .sort((left, right) => right.score - left.score || left.name.localeCompare(right.name)));
 
-  ngOnInit(): void {
-    console.log('[AdminAnswerDashboardComponent] ngOnInit', { gameId: this.gameId });
-    this.refreshView();
-    this.loadPlayers();
-    this.socketService.joinGame(this.gameId);
-    this.socketService.onClueSelected(clue => {
-      console.log('[AdminAnswerDashboardComponent] received selected clue', { clue });
-      this.adminAnswerStateService.setSelectedClue(clue);
-      this.refreshView();
-    });
-    this.socketService.onClueClosed(() => {
-      console.log('[AdminAnswerDashboardComponent] received clue closed');
-      this.adminAnswerStateService.clearSelectedClue();
-      this.refreshView();
-    });
-    this.socketService.onAnswerSubmitted(answer => {
-      console.log('[AdminAnswerDashboardComponent] received submitted answer', { answer });
-      this.adminAnswerStateService.addSubmittedAnswer(answer);
-      this.refreshView();
-    });
-    this.socketService.onPlayersUpdated(players => {
-      console.log('[AdminAnswerDashboardComponent] received updated players', { players });
-      this.players = this.sortPlayersByScore(players ?? []);
-      this.changeDetectorRef.detectChanges();
-    });
+  constructor() { this.game.joinGame(this.gameId); }
+  get selectedClue() { return this.game.activeClue(); }
+  get submittedAnswers() { return this.game.answers(); }
+  get players() { return this.sortedPlayers(); }
 
-    timer(3000, 3000)
-      .pipe(
-        takeUntil(this.destroy$),
-        switchMap(() => this.playerService.getPlayers(this.gameId))
-      )
-      .subscribe({
-        next: players => {
-          console.log('[AdminAnswerDashboardComponent] poll returned players', { count: players.length, players });
-          this.players = this.sortPlayersByScore(players);
-          this.changeDetectorRef.detectChanges();
-        },
-        error: error => {
-          console.log('[AdminAnswerDashboardComponent] poll players error', { error });
-        },
+  async setAnswerCorrectness(answer: SubmittedAnswer, isCorrect: boolean): Promise<void> {
+    if (this.gradingIds().has(answer.id) || !this.game.synchronized()) return;
+    this.gradingIds.update(ids => new Set([...ids, answer.id]));
+    this.errorMessage.set('');
+    try {
+      await firstValueFrom(this.playerService.overrideAnswer(answer.id, isCorrect));
+      // The server persists the judgment and score delta, then broadcasts both.
+      await this.game.sync();
+    } catch (error) {
+      this.errorMessage.set(error instanceof Error ? error.message : 'Could not save the judgment. Please retry.');
+    } finally {
+      this.gradingIds.update(ids => { const next = new Set(ids); next.delete(answer.id); return next; });
+    }
+  }
+
+  async onThemeChange(theme: ThemeName): Promise<void> {
+    if (this.changingTheme() || !this.game.synchronized()) return;
+    this.changingTheme.set(true);
+    this.errorMessage.set('');
+    try {
+      await this.game.setTheme(this.gameId, theme);
+      this.selectedTheme.set(theme);
+      this.themeService.setTheme(theme);
+      await this.router.navigate([], {
+        relativeTo: this.activatedRoute, queryParams: { theme },
+        queryParamsHandling: 'merge', replaceUrl: true,
       });
-  }
-
-  ngOnDestroy(): void {
-    console.log('[AdminAnswerDashboardComponent] ngOnDestroy');
-    this.socketService.offClueSelected();
-    this.socketService.offClueClosed();
-    this.socketService.offAnswerSubmitted();
-    this.socketService.offPlayersUpdated();
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  setAnswerCorrectness(answer: SubmittedAnswer, isCorrect: boolean): void {
-    this.adminAnswerStateService.updateAnswerCorrectness(answer, isCorrect);
-    this.refreshView();
-  }
-
-  onThemeChange(theme: ThemeName): void {
-    this.selectedTheme = theme;
-    this.themeService.setTheme(theme);
-    this.socketService.setTheme(this.gameId, theme);
-    void this.router.navigate([], {
-      relativeTo: this.activatedRoute,
-      queryParams: { theme },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
-  }
-
-  private refreshView(): void {
-    this.selectedClue = this.adminAnswerStateService.getSelectedClue();
-    this.submittedAnswers = this.adminAnswerStateService.getSubmittedAnswers();
-    this.changeDetectorRef.detectChanges();
-  }
-
-  private loadPlayers(): void {
-    this.playerService.getPlayers(this.gameId).subscribe({
-      next: players => {
-        console.log('[AdminAnswerDashboardComponent] loadPlayers success', { count: players.length, players });
-        this.players = this.sortPlayersByScore(players);
-        this.changeDetectorRef.detectChanges();
-      },
-      error: error => {
-        console.log('[AdminAnswerDashboardComponent] loadPlayers error', { error });
-      },
-    });
-  }
-
-  private sortPlayersByScore(players: Player[]): Player[] {
-    return [...players].sort((left, right) => right.score - left.score || left.name.localeCompare(right.name));
+    } catch {
+      this.errorMessage.set('Could not change the theme. Please retry.');
+    } finally { this.changingTheme.set(false); }
   }
 }

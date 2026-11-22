@@ -1,23 +1,17 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 import { PlayerJoinComponent } from './player-join';
 
 describe('PlayerJoinComponent', () => {
-  let component: PlayerJoinComponent;
-  let fixture: ComponentFixture<PlayerJoinComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [PlayerJoinComponent]
-    })
-    .compileComponents();
-
-    fixture = TestBed.createComponent(PlayerJoinComponent);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('requires a join code before making a request', () => {
+    TestBed.configureTestingModule({ imports: [PlayerJoinComponent], providers: [
+      provideRouter([]), provideHttpClient(), provideHttpClientTesting(),
+    ] });
+    const component = TestBed.createComponent(PlayerJoinComponent).componentInstance;
+    component.joinGame();
+    expect(component.errorMessage).toBe('Enter the 6-character join code.');
+    expect(component.loading).toBe(false);
   });
 });

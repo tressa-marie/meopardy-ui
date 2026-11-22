@@ -2,6 +2,17 @@
   <section class="player-answer-panel">
     <p class="eyebrow">Player Answer</p>
     <h1>Submit Your Answer</h1>
+    @if (!game.synchronized()) { <p role="status">Reconnecting and restoring your answer…</p> }
+    @if (game.error()) { <p role="alert">{{ game.error() }}</p><a routerLink="/join">Rejoin game</a> }
+    @if (game.state()?.status === 'answering') {
+      <p role="timer">{{ game.remainingSeconds() }} seconds remaining</p>
+    }
+    @if (game.state()?.status === 'reveal' || (game.state()?.status === 'answering' && game.remainingSeconds() === 0)) {
+      <p role="status">Answers are closed. Please wait for your host.</p>
+    }
+    @if (game.state()?.status === 'reveal' && game.state()?.revealedAnswer; as revealedAnswer) {
+      <p>Answer: {{ revealedAnswer }}</p>
+    }
 
     <section class="question-card" aria-label="Selected question">
       <p class="section-label">Question</p>
@@ -20,22 +31,22 @@
       maxlength="120"
       placeholder="Type your answer here"
       [(ngModel)]="answer"
-      [disabled]="submitted || submitting" />
+      [disabled]="submitted() || submitting() || !game.acceptingAnswers()" />
 
     <button
       type="button"
       class="submit-button"
       [disabled]="!canSubmit"
       (click)="submitAnswer()">
-      {{ submitted ? 'Answer Submitted' : (submitting ? 'Submitting...' : 'Submit Answer') }}
+      {{ submitted() ? 'Answer Submitted' : (submitting() ? 'Submitting...' : 'Submit Answer') }}
     </button>
 
-    @if (submitted) {
+    @if (submitted()) {
       <p class="submission-note">Your answer is in. Please wait for the next prompt.</p>
     }
 
-    @if (errorMessage) {
-      <p class="submission-error">{{ errorMessage }}</p>
+    @if (errorMessage()) {
+      <p class="submission-error" role="alert">{{ errorMessage() }}</p>
     }
   </section>
 </main>

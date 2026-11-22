@@ -4,11 +4,12 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { Player } from "../../models/player";
 
-export interface SubmitAnswerRequest {
-    clueId: number;
+export interface OverrideAnswerResult {
+    answerId: number;
     playerId: number;
-    submittedAnswer: string;
-    responseTimeMs: number;
+    isCorrect: boolean;
+    pointsAwarded: number;
+    newScore: number;
 }
 
 @Injectable({
@@ -19,18 +20,15 @@ export class PlayerService {
     private readonly http = inject(HttpClient);
 
     joinGame(joinCode: string, playerName: string): Observable<Player> {
-        console.log('[PlayerService] POST /players/join', { joinCode, playerName });
         return this.http.post<Player>(`${this.apiUrl}/players/join`, { joinCode, playerName });
     }
 
     getPlayers(gameId: number): Observable<Player[]> {
         const params = new HttpParams().set('_ts', Date.now().toString());
-        console.log('[PlayerService] GET /players/game/:id', { gameId, params: params.toString() });
         return this.http.get<Player[]>(`${this.apiUrl}/players/game/${gameId}`, { params });
     }
 
-    submitAnswer(request: SubmitAnswerRequest): Observable<void> {
-        console.log('[PlayerService] POST /answers/submit', request);
-        return this.http.post<void>(`${this.apiUrl}/answers/submit`, request);
+    overrideAnswer(answerId: number, isCorrect: boolean): Observable<OverrideAnswerResult> {
+        return this.http.patch<OverrideAnswerResult>(`${this.apiUrl}/answers/${answerId}/override`, { isCorrect });
     }
 }

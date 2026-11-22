@@ -6,6 +6,10 @@
   <p class="error">{{ errorMessage }}</p>
 }
 
+@if (actionError() || game.error()) {
+  <p role="alert">{{ actionError() || game.error() }}</p>
+}
+
 @if (joinCode) {
   <main class="app-screen app-screen--centered join-screen">
     <p class="eyebrow">Join the game</p>
@@ -14,6 +18,8 @@
       <p class="label">Join Code</p>
       <p class="code">{{ joinCode }}</p>
     </section>
-    <a class="start-button" [routerLink]="['/host', gameId]">Start Game</a>
+    <button type="button" class="start-button" [disabled]="starting() || !game.synchronized()" (click)="startGame()">
+      {{ starting() ? 'Starting…' : 'Start Game' }}
+    </button>
   </main>
 }

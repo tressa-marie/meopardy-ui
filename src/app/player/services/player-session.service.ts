@@ -7,12 +7,23 @@ import { Player } from '../../models/player';
 export class PlayerSessionService {
   private readonly storageKey = 'meopardy-player';
 
+  constructor() {
+    if (this.hasStorage()) {
+      localStorage.removeItem('meopardy-selected-clue');
+      localStorage.removeItem('meopardy-selected-clue-shown-at');
+    }
+  }
+
   savePlayer(player: Player): void {
     if (!this.hasStorage()) {
       return;
     }
 
-    localStorage.setItem(this.storageKey, JSON.stringify(player));
+    const { id, name, gameId, score, joinedAt, sessionToken } = player;
+    localStorage.setItem(this.storageKey, JSON.stringify({ id, name, gameId, score, joinedAt, sessionToken }));
+    // Discard legacy cached clues, which included answer keys and client timestamps.
+    localStorage.removeItem('meopardy-selected-clue');
+    localStorage.removeItem('meopardy-selected-clue-shown-at');
   }
 
   getPlayer(): Player | undefined {
@@ -27,7 +38,13 @@ export class PlayerSessionService {
     }
 
     try {
-      return JSON.parse(rawPlayer) as Player;
+      const player = JSON.parse(rawPlayer) as Player;
+      if (!player || !Number.isSafeInteger(player.id) || !Number.isSafeInteger(player.gameId)
+        || typeof player.sessionToken !== 'string' || !/^[a-f0-9]{64}$/.test(player.sessionToken)) {
+        localStorage.removeItem(this.storageKey);
+        return undefined;
+      }
+      return player;
     } catch {
       localStorage.removeItem(this.storageKey);
       return undefined;
@@ -36,6 +53,13 @@ export class PlayerSessionService {
 
   getGameId(): number | undefined {
     return this.getPlayer()?.gameId;
+  }
+
+  updatePlayer(player: Player): void {
+    const current = this.getPlayer();
+    if (current?.id === player.id && current.gameId === player.gameId) {
+      this.savePlayer({ ...current, ...player, sessionToken: current.sessionToken });
+    }
   }
 
   getPlayerId(): number | undefined {

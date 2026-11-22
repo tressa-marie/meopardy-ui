@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { GameBoard } from '../../models/board';
 import { Clue } from '../../models/clue';
@@ -18,8 +18,10 @@ export class GameService {
     return this.http.get<Game>(`${this.apiUrl}/games/${gameId}`);
   }
 
-  getJoinCode(gameId: number): Observable<{ joinCode: string }> {
-    return this.http.get<{ joinCode: string }>(`${this.apiUrl}/games/${gameId}/join`);
+  getJoinCode(gameId: number): Observable<string> {
+    return this.http.get<string | { joinCode: string }>(`${this.apiUrl}/games/${gameId}/join`).pipe(
+      map(response => typeof response === 'string' ? response : response.joinCode)
+    );
   }
 
   getGameBoard(gameId: number): Observable<GameBoard> {

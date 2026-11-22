@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { PlayerService } from '../../services/player-api';
-import { SocketService } from '../../../core/services/socket/socker.service';
 import { PlayerSessionService } from '../../services/player-session.service';
 
 @Component({
@@ -16,7 +15,7 @@ import { PlayerSessionService } from '../../services/player-session.service';
 export class PlayerJoinComponent {
   readonly gameTitle = 'Meopardy'; // TODO: Get from config
   private readonly playerService = inject(PlayerService);
-  private readonly socketService = inject(SocketService);
+  private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly playerSessionService = inject(PlayerSessionService);
   private readonly router = inject(Router);
   joinCode = '';
@@ -39,17 +38,14 @@ export class PlayerJoinComponent {
   joinGame(): void {
     const joinCode = this.joinCode.trim();
     const playerName = this.playerName.trim();
-    console.log('[PlayerJoinComponent] joinGame clicked', { joinCode, playerName });
 
     if (joinCode.length !== 6) {
       this.errorMessage = 'Enter the 6-character join code.';
-      console.log('[PlayerJoinComponent] validation failed', { reason: 'joinCode length', joinCode });
       return;
     }
 
     if (!playerName) {
       this.errorMessage = 'Enter a player name.';
-      console.log('[PlayerJoinComponent] validation failed', { reason: 'missing playerName' });
       return;
     }
 
@@ -59,19 +55,13 @@ export class PlayerJoinComponent {
     this.playerService.joinGame(joinCode, playerName).subscribe({
       next: player => {
         this.playerSessionService.savePlayer(player);
-        console.log('[PlayerJoinComponent] joinGame success');
-        this.socketService.notifyPlayerJoined(player.gameId);
         this.loading = false;
         void this.router.navigate(['/join-confirmation']);
       },
       error: (error: HttpErrorResponse) => {
-        console.log('[PlayerJoinComponent] joinGame error', {
-          status: error.status,
-          error: error.error,
-          message: error.message,
-        });
         this.errorMessage = this.getJoinErrorMessage(error);
         this.loading = false;
+        this.changeDetector.markForCheck();
       },
     });
   }

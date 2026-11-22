@@ -1,9 +1,18 @@
 <main class="app-screen app-screen--centered player-board-screen">
   <section class="player-board-panel">
     <p class="eyebrow">Player Board</p>
-    <h1>Waiting For The Next Question</h1>
+    <h1>{{ game.state()?.status === 'finished' ? 'Game Finished' : 'Waiting For The Next Question' }}</h1>
+    @if (!game.synchronized()) { <p role="status">Reconnecting and restoring your game…</p> }
+    @if (game.error()) { <p role="alert">{{ game.error() }}</p><a routerLink="/join">Rejoin game</a> }
+    @if (game.state()?.status === 'finished') {
+      <ol aria-label="Final scores">
+        @for (player of game.state()?.standings; track player.id) {
+          <li>{{ player.rank }}. {{ player.name }} — {{ player.score }}</li>
+        }
+      </ol>
+    }
     <p class="player-board-message">
-      The selected clue will appear on your answer screen as soon as the host picks a square.
+      {{ game.state()?.status === 'finished' ? 'Thanks for playing!' : 'The selected clue will appear as soon as the host picks a square.' }}
     </p>
   </section>
 </main>

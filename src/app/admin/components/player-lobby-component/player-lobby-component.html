@@ -2,6 +2,10 @@
   <section class="lobby-panel">
     <p class="eyebrow">Admin Lobby</p>
     <h1>Players</h1>
+    <a [routerLink]="['/join-code', gameId]">Show join code</a>
+    @if (errorMessage() || game.error()) {
+      <p role="alert">{{ errorMessage() || game.error() }}</p>
+    }
 
     @if (players.length === 0) {
       <p class="status">No players have joined yet.</p>
@@ -15,6 +19,8 @@
       </ul>
     }
 
-    <button type="button" class="start-button" (click)="startGame()">Start Game</button>
+    <button type="button" class="start-button" [disabled]="starting() || !game.synchronized()" (click)="startGame()">
+      {{ starting() ? 'Starting…' : 'Start Game' }}
+    </button>
   </section>
 </main>

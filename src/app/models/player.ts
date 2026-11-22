@@ -4,4 +4,5 @@ export interface Player {
     gameId: number;
     score: number;
     joinedAt: string;   
+    sessionToken?: string;
 }

@@ -2,13 +2,19 @@
   <p>Loading game board...</p>
 }
 
-@if (errorMessage) {
-  <p class="error">{{ errorMessage }}</p>
+@if (errorMessage() || game.error()) {
+  <p class="error" role="alert">{{ errorMessage() || game.error() }}</p>
 }
 
 @if (board) {
   <main class="app-screen game-board">
     <h1>{{ board.title }}</h1>
+    <a [routerLink]="['/admin-dashboard', gameId]" target="_blank" rel="noopener">Open answer dashboard</a>
+    @if (board.status === 'setup') {
+      <p>Start the game from the <a [routerLink]="['/admin-lobby', gameId]">player lobby</a>.</p>
+    }
+    @if (board.status === 'finished') { <h2>Game finished</h2> }
+    @if (!game.synchronized()) { <p role="status">Reconnecting and restoring the game…</p> }
 
     <section class="grid">
       @for (category of board.categories; track category.id) {
@@ -21,7 +27,7 @@
             <button
               class="clue-tile"
               [class.answered]="clue.isAnswered"
-              [disabled]="clue.isAnswered"
+              [disabled]="clue.isAnswered || clue.isPlayed || busy() || !game.synchronized() || board.status !== 'board'"
               (click)="selectClue(clue)">
               @if (!clue.isAnswered) {
                 ${{ clue.basePoints }}
@@ -38,18 +44,22 @@
 
 @if (selectedClue) {
   <div class="modal-backdrop">
-    <section class="clue-modal">
+    <section class="clue-modal" role="dialog" aria-modal="true" aria-label="Selected clue">
       <p class="clue-value">${{ selectedClue.basePoints }}</p>
       <h2>{{ selectedClue.question }}</h2>
 
-      <details>
-        <summary>Show answer</summary>
-        <p>{{ selectedClue.correctAnswer }}</p>
-      </details>
+      @if (game.state()?.status === 'answering') {
+        <p role="timer">{{ game.remainingSeconds() }} seconds remaining</p>
+      }
+      @if (game.state()?.revealedAnswer; as revealedAnswer) {
+        <p>Answer: {{ revealedAnswer }}</p>
+      }
+      @if (errorMessage()) { <p class="error" role="alert">{{ errorMessage() }}</p> }
 
       <div class="modal-actions">
-        <button type="button" (click)="closeClue()">Close</button>
-        <button type="button" (click)="markAnswered()">Mark Answered</button>
+        <button type="button" [disabled]="busy() || !game.synchronized() || game.state()?.status === 'reveal'" (click)="revealAnswer()">Reveal answer</button>
+        <button type="button" [disabled]="busy() || !game.synchronized()" (click)="closeClue()">Close</button>
+        <button type="button" [disabled]="busy() || !game.synchronized()" (click)="markAnswered()">{{ busy() ? 'Saving…' : 'Mark Answered' }}</button>
       </div>
     </section>
   </div>

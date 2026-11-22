@@ -1,92 +1,41 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { injectRouteGameId } from '../../../core/routing/game-id';
-import { Player } from '../../../models/player';
-import { PlayerService } from '../../../player/services/player-api';
 import { SocketService } from '../../../core/services/socket/socker.service';
-import { Subject, timer } from 'rxjs';
-import { switchMap, takeUntil } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-player-lobby-component',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './player-lobby-component.html',
-  styleUrl: './player-lobby-component.scss',
+  selector: 'app-player-lobby-component', standalone: true, imports: [RouterLink],
+  templateUrl: './player-lobby-component.html', styleUrl: './player-lobby-component.scss',
 })
-export class PlayerLobbyComponent implements OnInit, OnDestroy {
-  private readonly changeDetectorRef = inject(ChangeDetectorRef);
-  private readonly playerService = inject(PlayerService);
-  private readonly socketService = inject(SocketService);
-  private readonly router = inject(Router);
-  private readonly destroy$ = new Subject<void>();
-  private setupTimer: ReturnType<typeof setTimeout> | null = null;
-
-  players: Player[] = [];
-
+export class PlayerLobbyComponent {
   readonly gameId = injectRouteGameId();
+  readonly game = inject(SocketService);
+  readonly starting = signal(false);
+  readonly errorMessage = signal('');
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
-  ngOnInit(): void {
-    console.log('[PlayerLobbyComponent] ngOnInit', { gameId: this.gameId });
-    this.setupTimer = setTimeout(() => {
-      this.loadPlayers();
-      this.socketService.joinGame(this.gameId);
-      this.socketService.onPlayersUpdated(() => {
-        console.log('[PlayerLobbyComponent] socket-triggered refresh');
-        this.loadPlayers();
-      });
-      this.socketService.onGameStarted(() => {
-        console.log('[PlayerLobbyComponent] game started, navigating to /host');
-        void this.router.navigate(['/host', this.gameId]);
-      });
-
-      timer(3000, 3000)
-        .pipe(
-          takeUntil(this.destroy$),
-          switchMap(() => this.playerService.getPlayers(this.gameId))
-        )
-        .subscribe({
-          next: players => {
-            console.log('[PlayerLobbyComponent] poll returned players', { count: players.length, players });
-            this.players = players;
-            this.changeDetectorRef.detectChanges();
-          },
-          error: error => {
-            console.log('[PlayerLobbyComponent] poll failed', { error });
-          },
-        });
-    }, 0);
-  }
-
-  ngOnDestroy(): void {
-    console.log('[PlayerLobbyComponent] ngOnDestroy');
-    this.socketService.offPlayersUpdated();
-    this.socketService.offGameStarted();
-    if (this.setupTimer) {
-      clearTimeout(this.setupTimer);
-    }
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  startGame(): void {
-    console.log('[PlayerLobbyComponent] Start Game clicked', { gameId: this.gameId });
-    this.socketService.startGame(this.gameId);
-    void this.router.navigate(['/host', this.gameId]);
-  }
-
-  private loadPlayers(): void {
-    console.log('[PlayerLobbyComponent] loadPlayers start', { gameId: this.gameId });
-    this.playerService.getPlayers(this.gameId).subscribe({
-      next: players => {
-        console.log('[PlayerLobbyComponent] loadPlayers success', { count: players.length, players });
-        this.players = players;
-        this.changeDetectorRef.detectChanges();
-      },
-      error: error => {
-        console.log('[PlayerLobbyComponent] loadPlayers error', { error });
-      },
+  constructor() {
+    this.game.joinGame(this.gameId);
+    effect(() => {
+      const state = this.game.state();
+      if (this.game.synchronized() && state && state.status !== 'setup') {
+        void this.router.navigate(['/host', this.gameId], { replaceUrl: true });
+      }
     });
+  }
+
+  get players() { return this.game.state()?.players ?? []; }
+
+  async startGame(): Promise<void> {
+    if (this.starting() || !this.game.synchronized()) return;
+    this.starting.set(true);
+    this.errorMessage.set('');
+    try {
+      await this.game.startGame(this.gameId);
+      if (!this.destroyRef.destroyed) await this.router.navigate(['/host', this.gameId]);
+    } catch (error) {
+      this.errorMessage.set(error instanceof Error ? error.message : 'Could not start the game.');
+    } finally { this.starting.set(false); }
   }
 }

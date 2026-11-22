@@ -1,80 +1,50 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { GameBoard } from '../../../models/board';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Clue } from '../../../models/clue';
-import { GameService } from '../../services/game-api';
-import { injectRouteGameId } from '../../../core/routing/game-id';
-import { finalize, timeout } from 'rxjs/operators';
 import { SocketService } from '../../../core/services/socket/socker.service';
-import { AdminAnswerStateService } from '../../../admin/services/admin-answer-state.service';
+import { injectRouteGameId } from '../../../core/routing/game-id';
 
 @Component({
-  selector: 'app-game-board-component',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './game-board-component.component.html',
-  styleUrl: './game-board-component.component.scss',
+  selector: 'app-game-board-component', standalone: true, imports: [RouterLink],
+  templateUrl: './game-board-component.component.html', styleUrl: './game-board-component.component.scss',
 })
-
 export class GameBoardComponentComponent implements OnInit {
-  private readonly gameId = injectRouteGameId();
-  private readonly changeDetectorRef = inject(ChangeDetectorRef);
-  private readonly socketService = inject(SocketService);
-  private readonly adminAnswerStateService = inject(AdminAnswerStateService);
-  board?: GameBoard;
-  selectedClue?: Clue;
-  loading = true;
-  errorMessage = '';
-  private readonly gameService = inject(GameService);
+  readonly gameId = injectRouteGameId();
+  readonly game = inject(SocketService);
+  readonly busy = signal(false);
+  readonly errorMessage = signal('');
 
-  ngOnInit(): void {
-    console.log('[GameBoardComponent] ngOnInit', { gameId: this.gameId });
-    this.socketService.joinGame(this.gameId);
-    this.gameService.getGameBoard(this.gameId)
-      .pipe(
-        timeout(10000),
-        finalize(() => {
-          this.loading = false;
-          console.log('[GameBoardComponent] finalize', {
-            hasBoard: !!this.board,
-            errorMessage: this.errorMessage,
-          });
-          this.changeDetectorRef.detectChanges();
-        })
-      )
-      .subscribe({
-      next: board => {
-        this.board = board;
-        console.log('[GameBoardComponent] board loaded', board);
-      },
-      error: error => {
-        console.log('[GameBoardComponent] board load error', error);
-        this.errorMessage = 'Could not load the game board.';
-      },
-    });
+  ngOnInit(): void { this.game.joinGame(this.gameId); }
+  get board() { return this.game.state(); }
+  get selectedClue() { return this.game.activeClue(); }
+  get loading() { return !this.game.synchronized() && !this.game.error(); }
+
+  async selectClue(clue: Clue): Promise<void> {
+    if (clue.isAnswered || clue.isPlayed || this.game.state()?.status !== 'board') return;
+    await this.perform(() => this.game.selectClue(this.gameId, { id: clue.id }));
   }
 
-  selectClue(clue: Clue): void {
-    if (clue.isAnswered) return;
-    this.selectedClue = clue;
-    this.adminAnswerStateService.setSelectedClue(clue);
-    this.socketService.selectClue(this.gameId, clue);
+  async closeClue(): Promise<void> {
+    const clueId = this.selectedClue?.id;
+    if (clueId) await this.perform(() => this.game.closeClue(this.gameId, clueId));
   }
 
-  closeClue(): void {
-    this.selectedClue = undefined;
-    this.adminAnswerStateService.clearSelectedClue();
-    this.socketService.closeClue(this.gameId);
+  // Both close paths use the same persisted, acknowledged server transition.
+  async markAnswered(): Promise<void> { await this.closeClue(); }
+
+  async revealAnswer(): Promise<void> {
+    const clueId = this.selectedClue?.id;
+    if (clueId) await this.perform(() => this.game.revealClue(this.gameId, clueId));
   }
 
-  markAnswered(): void {
-    if (!this.selectedClue) return;
-
-    this.gameService.markClueAnswered(this.selectedClue.id).subscribe({
-      next: () => {
-        this.selectedClue!.isAnswered = true;
-        this.selectedClue = undefined;
-      }
-    });
+  private async perform(action: () => Promise<void>): Promise<void> {
+    if (this.busy() || !this.game.synchronized()) return;
+    this.busy.set(true);
+    this.errorMessage.set('');
+    try { await action(); }
+    catch (error) {
+      this.errorMessage.set(error instanceof Error ? error.message : 'Could not update the game.');
+      await this.game.sync().catch(() => undefined);
+    } finally { this.busy.set(false); }
   }
 }

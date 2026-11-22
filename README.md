@@ -1,59 +1,33 @@
-# MeopardyUi
+# Meopardy UI
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.4.
+Hosted site: [https://jattam.onrender.com/](https://jattam.onrender.com/)
 
-## Development server
+Angular frontend for a hosted, multiplayer written-answer trivia game. Requires Node.js 22 and the Meopardy backend with persisted gameplay, recovery tokens, and snapshot events.
 
-To start a local development server, run:
+## Run locally
 
-```bash
-ng serve
-```
+1. Start the sibling `meopardy-backend` on port 3000 using its README instructions. Import a game and note its game ID.
+2. Run `npm ci` and `npm start` in this repository. On Windows PowerShell with restricted script execution, use `npm.cmd`.
+3. Open `http://localhost:4200/admin-lobby/<gameId>` for the host and follow **Show join code**. Both Start buttons wait for server confirmation.
+4. Players open `http://localhost:4200/join` and enter the code and their name. Use separate browsers/profiles for separate players; a browser profile retains one player session.
+5. Open the host board at `/host/<gameId>` and its **Open answer dashboard** link in another tab. Select a clue, monitor submissions and grade on the dashboard, then reveal/close the clue. **Close** and **Mark Answered** both complete the clue and advance the saved game. Revealing locks answers; the server also reveals automatically when time expires.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+The root URL defaults to the configured game ID (currently 8). Change `src/environments/environment.ts` for local API/socket URLs and `environment.production.ts` for deployed URLs. Production hosting must serve `index.html` for Angular routes.
 
-## Code scaffolding
+## Gameplay and server contracts
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- `GET /api/games/:id/join` can return either a JSON string or `{ joinCode }`.
+- Host sockets join with `admin:joinGame { gameId }`; player sockets join with `player:joinGame { gameId, sessionToken }`. Player identity and token come from `POST /api/players/join` and are retained across refreshes. Older sessions without tokens must rejoin.
+- `game:state` snapshots drive the phase, board, active clue, scores, reveal, and deadline. `game:answers` restores the host's saved submissions; `player:state` restores the player's score and accepted answer. SQLite numeric flags are normalized at the frontend boundary.
+- Reconnects rejoin the saved room. A periodic `game:sync` also recovers missed events. Controls stay disabled until synchronization succeeds. Player routes follow the saved phase, including when joining a game already in progress.
+- `game:start`, `game:clueSelected`, `game:clueRevealed`, and `game:clueClosed` require acknowledgment `{ ok, result }` or `{ ok: false, message }`. Selection sends only `{ gameId, clue: { id } }`; closing includes the captured clue ID so a retry cannot close a later clue.
+- Player submissions use `game:answerSubmitted { clueId, submittedAnswer }` on the session-authenticated socket. The backend supplies identity, elapsed time, duplicate protection, persistence, scoring, and broadcasts. The frontend never sends client elapsed times or rebroadcasts accepted answers. A timeout triggers recovery before retrying.
+- Grading uses `PATCH /api/answers/:answerId/override { isCorrect }`. The server saves the judgment and adjusts the score delta, then broadcasts updated snapshots. Failed saves do not optimistically change the displayed judgment.
+- Public clue models and selection messages contain no answer key. Answer text appears only in the server's revealed state. Legacy cached clue/answer keys are removed from local storage.
+- Countdown display uses the server's clock offset and deadline. The server enforces the actual acceptance window; browser timing never determines awarded points.
 
-```bash
-ng generate component component-name
-```
+The backend currently documents host authentication as unfinished: admin room joins and grading endpoints still require server-side authorization before a public release. Frontend filtering cannot provide that protection.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Validation
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Run `npm run build` and `npm test -- --watch=false`. Tests cover API join-code shapes, acknowledged starts and clue closure, persistent grading failures, session recovery, duplicate submissions, stale responses, answer privacy, and deadline locking. Socket and HTTP dependencies are mocked in frontend tests; run the backend's multiplayer tests as well when changing the shared protocol.

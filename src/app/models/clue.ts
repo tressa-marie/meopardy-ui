@@ -4,6 +4,7 @@ export interface Clue {
   categoryName: string;
   basePoints: number;
   question: string;
-  correctAnswer: string;
   isAnswered: boolean;
+  isPlayed?: boolean;
+  timeLimitSeconds?: number;
 }

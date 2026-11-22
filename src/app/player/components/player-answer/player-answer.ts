@@ -1,128 +1,58 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, computed, effect, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { PlayerClueStateService } from '../../services/player-clue-state.service';
-import { PlayerService } from '../../services/player-api';
-import { PlayerSessionService } from '../../services/player-session.service';
-import { AdminAnswerStateService } from '../../../admin/services/admin-answer-state.service';
-import { SocketService } from '../../../core/services/socket/socker.service';
-import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
+import { bindPlayerGame } from '../../services/player-game';
 
 @Component({
-  selector: 'app-player-answer',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './player-answer.html',
-  styleUrl: './player-answer.scss',
+  selector: 'app-player-answer', standalone: true, imports: [FormsModule, RouterLink],
+  templateUrl: './player-answer.html', styleUrl: './player-answer.scss',
 })
-export class PlayerAnswerComponent implements OnInit, OnDestroy {
-  private readonly changeDetectorRef = inject(ChangeDetectorRef);
-  private readonly playerClueStateService = inject(PlayerClueStateService);
-  private readonly playerService = inject(PlayerService);
-  private readonly playerSessionService = inject(PlayerSessionService);
-  private readonly adminAnswerStateService = inject(AdminAnswerStateService);
-  private readonly socketService = inject(SocketService);
-  private readonly router = inject(Router);
-  private readonly gameId = this.playerSessionService.getGameId();
-
+export class PlayerAnswerComponent {
+  readonly game = bindPlayerGame();
   answer = '';
-  submitted = false;
-  errorMessage = '';
-  submitting = false;
+  readonly submitting = signal(false);
+  readonly errorMessage = signal('');
+  private readonly acceptedClueId = signal<number | null>(null);
+  readonly submitted = computed(() => {
+    const id = this.game.activeClue()?.id;
+    return !!id && (this.acceptedClueId() === id || this.game.ownAnswer()?.clueId === id);
+  });
+  private currentClueId?: number;
 
-  ngOnInit(): void {
-    console.log('[PlayerAnswerComponent] ngOnInit', { gameId: this.gameId });
-    if (!this.gameId) {
-      this.errorMessage = 'Could not find your player session. Please rejoin the game.';
-      return;
-    }
-
-    this.socketService.joinPlayerGame(this.gameId);
-    this.socketService.onClueSelected(clue => {
-      console.log('[PlayerAnswerComponent] received selected clue', { clue });
-      this.playerClueStateService.setSelectedClue(clue);
+  constructor() {
+    effect(() => {
+      const id = this.game.activeClue()?.id;
+      if (id === this.currentClueId) return;
+      this.currentClueId = id;
       this.answer = '';
-      this.submitted = false;
-      this.errorMessage = '';
-      this.submitting = false;
-      this.changeDetectorRef.detectChanges();
+      this.errorMessage.set('');
+      this.acceptedClueId.set(null);
+      this.submitting.set(false);
     });
-    this.socketService.onClueClosed(() => {
-      console.log('[PlayerAnswerComponent] received clue closed, navigating to /player-board');
-      this.playerClueStateService.clearSelectedClue();
-      this.answer = '';
-      this.submitted = false;
-      this.errorMessage = '';
-      this.submitting = false;
-      this.changeDetectorRef.detectChanges();
-      void this.router.navigate(['/player-board']);
-    });
-
-    if (!this.playerSessionService.getPlayerId()) {
-      this.errorMessage = 'Could not find your player session. Please rejoin the game.';
-    } else if (!this.playerClueStateService.hasSelectedClue()) {
-      this.errorMessage = 'Waiting for the current question. Please stay on this screen.';
-    }
   }
 
-  ngOnDestroy(): void {
-    this.socketService.offClueSelected();
-    this.socketService.offClueClosed();
-  }
-
-  get question(): string {
-    return this.playerClueStateService.getSelectedClue()?.question ?? '';
-  }
+  get question(): string { return this.game.activeClue()?.question ?? ''; }
 
   get canSubmit(): boolean {
-    return !this.submitted && !this.submitting && !!this.answer.trim() && this.playerClueStateService.hasSelectedClue();
+    return this.game.acceptingAnswers() && !this.submitted() && !this.submitting() && !!this.answer.trim();
   }
 
-  submitAnswer(): void {
-    if (!this.answer.trim()) {
-      return;
+  async submitAnswer(): Promise<void> {
+    if (!this.canSubmit) return;
+    const clueId = this.game.activeClue()!.id;
+    this.submitting.set(true);
+    this.errorMessage.set('');
+    try {
+      await this.game.submitAnswer(clueId, this.answer.trim());
+      if (this.game.activeClue()?.id === clueId) this.acceptedClueId.set(clueId);
+    } catch (error) {
+      if (this.game.activeClue()?.id === clueId) {
+        this.errorMessage.set(error instanceof Error ? error.message : 'Could not submit your answer. Please retry.');
+      }
+      // A timed-out acknowledgment may still have saved the answer. Recover before another attempt.
+      await this.game.sync().catch(() => undefined);
+    } finally {
+      if (this.game.activeClue()?.id === clueId) this.submitting.set(false);
     }
-
-    const clueId = this.playerClueStateService.getSelectedClue()?.id;
-    const playerId = this.playerSessionService.getPlayerId();
-    const gameId = this.gameId;
-
-    if (!clueId || !playerId || !gameId) {
-      this.errorMessage = 'Could not submit your answer. Please rejoin the game.';
-      return;
-    }
-
-    this.errorMessage = '';
-    this.submitting = true;
-
-    const request = {
-      clueId,
-      playerId,
-      submittedAnswer: this.answer.trim(),
-      responseTimeMs: Date.now() - this.playerClueStateService.getQuestionShownAt(),
-    };
-
-    this.playerService.submitAnswer(request).subscribe({
-      next: () => {
-        this.submitted = true;
-        this.submitting = false;
-        const player = this.playerSessionService.getPlayer();
-        const submittedAnswer = {
-          ...request,
-          playerName: player?.name,
-          isCorrect: null,
-        };
-        this.adminAnswerStateService.addSubmittedAnswer(submittedAnswer);
-        this.socketService.submitAnswer(gameId, submittedAnswer);
-        this.changeDetectorRef.detectChanges();
-        console.log('[PlayerAnswerComponent] answer submitted', request);
-      },
-      error: error => {
-        this.submitting = false;
-        this.errorMessage = 'Could not submit your answer. Please try again.';
-        this.changeDetectorRef.detectChanges();
-        console.log('[PlayerAnswerComponent] answer submit error', { error, request });
-      },
-    });
   }
 }
