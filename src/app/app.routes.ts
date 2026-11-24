@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
-import { environment } from '../environments/environment';
+import { GameHomeComponent } from './game/components/game-home/game-home';
+import { UploadQuizComponent } from './game/components/upload-quiz/upload-quiz';
 import { PlayerLobbyComponent } from './admin/components/player-lobby-component/player-lobby-component';
 import { JoinGameComponent } from './game/components/join-game/join-game.component';
 import { PlayerJoinComponent } from './player/components/player-join/player-join';
@@ -10,6 +11,7 @@ import { GameBoardComponentComponent } from './game/components/game-board-compon
 import { AdminAnswerDashboardComponent } from './admin/components/admin-answer-dashboard/admin-answer-dashboard';
 
 export const routes: Routes = [
+  { path: 'upload-quiz', component: UploadQuizComponent },
   { path: 'admin-lobby/:gameId', component: PlayerLobbyComponent },
   { path: 'admin-dashboard/:gameId', component: AdminAnswerDashboardComponent },
   { path: 'join-code/:gameId', component: JoinGameComponent },
@@ -18,5 +20,5 @@ export const routes: Routes = [
   { path: 'join-confirmation', component: PlayerJoinConfirmationComponent },
   { path: 'player-board', component: PlayerBoardComponent },
   { path: 'player-answer', component: PlayerAnswerComponent },
-  { path: '', redirectTo: `host/${environment.defaultGameId}`, pathMatch: 'full' }
+  { path: '', component: GameHomeComponent, pathMatch: 'full' }
 ];

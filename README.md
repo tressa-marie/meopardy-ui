@@ -6,13 +6,23 @@ Angular frontend for a hosted, multiplayer written-answer trivia game. Requires 
 
 ## Run locally
 
-1. Start the sibling `meopardy-backend` on port 3000 using its README instructions. Import a game and note its game ID.
+1. Start the sibling `meopardy-backend` on port 3000 using its README instructions.
 2. Run `npm ci` and `npm start` in this repository. On Windows PowerShell with restricted script execution, use `npm.cmd`.
-3. Open `http://localhost:4200/admin-lobby/<gameId>` and select **Show join code** to open the display in another tab. Click **Start Game** in the admin lobby: after server confirmation, the lobby opens the admin dashboard and the join-code display automatically switches to the host board. A join-code display opened after the game starts also switches to the host board.
+3. Open `http://localhost:4200/` and choose **Upload Quiz** or **Join Game**. To host, upload and import a quiz, then use **Open Host Lobby**. In the lobby, select **Show join code** to open the display in another tab. Click **Start Game**: after server confirmation, the lobby opens the admin dashboard and the join-code display automatically switches to the host board. A join-code display opened after the game starts also switches to the host board.
 4. Players open `http://localhost:4200/join` and enter the code and their name. Use separate browsers/profiles for separate players; a browser profile retains one player session.
 5. Open the host board at `/host/<gameId>` and the answer dashboard at `/admin-dashboard/<gameId>` in another tab. Select a clue, monitor submissions and grade on the dashboard, then reveal/close the clue. **Close** completes the clue and advances the saved game. When time expires, submissions close and the answer stays hidden. Click **Reveal Answer** on the question card when ready, or close the clue to skip revealing it.
 
-The root URL defaults to the configured game ID (currently 8). Change `src/environments/environment.ts` for local API/socket URLs and `environment.production.ts` for deployed URLs. Production hosting must serve `index.html` for Angular routes.
+The root URL is a game-independent entry page. Existing `/host/:gameId`, `/join-code/:gameId`, `/admin-lobby/:gameId`, and `/admin-dashboard/:gameId` links remain supported. Change `src/environments/environment.ts` for local API/socket URLs and `environment.production.ts` for deployed URLs. Production hosting must serve `index.html` for Angular routes.
+
+## Upload a quiz
+
+Open `/upload-quiz` directly or use **Upload Quiz** on the home page. Select a `.json` file no larger than 2,097,152 bytes (2 MiB). The browser reads and validates it locally and previews its title and total rounds, categories, and questions. A downloadable example at `/examples/quiz-example.json` uses a 40-second timer.
+
+Required names, questions, and correct answers must contain nonblank text. Every quiz needs at least one round, every round a category, and every category a clue. `basePoints` and any supplied `timeLimitSeconds` must be positive integers. `acceptableAnswers` may be omitted (the backend defaults it to `[]`); `timeLimitSeconds` may be omitted (the backend defaults it to 20). Explicit timer values are preserved.
+
+Only **Import Quiz** sends `POST /api/games/import`, using the parsed JSON object as the body with `application/json`, without file metadata or multipart upload. File selection and importing are disabled while the request is pending. Requests allow 120 seconds and are never retried automatically. A timeout, network interruption, or unexpected response may leave the import outcome unknown; check for an existing game before manually retrying.
+
+On success, the page displays the returned join code and **Open Host Lobby**, linking to `/admin-lobby/<returned gameId>`. Validation issues display the server's exact paths and messages; array indices are zero-based. Both local file failures and server failures restore the controls so the user can correct a file or explicitly retry.
 
 ## Gameplay and server contracts
 

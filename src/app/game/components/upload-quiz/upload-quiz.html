@@ -1,0 +1,64 @@
+<main class="app-screen app-screen--centered upload-screen">
+  <section class="upload-panel" aria-labelledby="upload-heading">
+    <a class="text-link" routerLink="/">Back to home</a>
+    <h1 id="upload-heading">Upload Quiz</h1>
+
+    @if (result(); as imported) {
+      <section class="success-card" aria-labelledby="success-heading">
+        <h2 id="success-heading">Quiz imported!</h2>
+        <p>{{ imported.message }}</p>
+        <p class="section-label">Join code</p>
+        <p class="join-code">{{ imported.joinCode }}</p>
+        <a class="action-button host-lobby-link" [routerLink]="['/admin-lobby', imported.gameId]">Open Host Lobby</a>
+      </section>
+      <button type="button" class="text-button" (click)="reset()">Upload another quiz</button>
+    } @else {
+      <p class="intro">Choose a quiz, check its details, then import it to create your game.</p>
+      <a class="text-link" href="examples/quiz-example.json" download="meopardy-example.json">Download example JSON (40-second timer)</a>
+
+      <label class="section-label" for="quiz-file">Quiz JSON file</label>
+      <input id="quiz-file" type="file" accept=".json,application/json" aria-describedby="file-help"
+        [disabled]="importing()" (change)="onFileSelected($event)" />
+      <p id="file-help" class="help-text">Maximum 2,097,152 bytes (2 MiB). Your file is read locally before you import it.</p>
+      @if (filename()) { <p class="filename">Selected file: {{ filename() }}</p> }
+      @if (reading()) { <p role="status">Reading and validating your quiz…</p> }
+
+      @if (errorMessage()) {
+        <section class="error-card" role="alert">
+          <p>{{ errorMessage() }}</p>
+          @if (issues().length) {
+            <p>Array indices in these paths start at 0.</p>
+            <ul class="issue-list">
+              @for (issue of visibleIssues(); track $index) {
+                <li><code>{{ issue.path }}</code>: {{ issue.message }}</li>
+              }
+            </ul>
+            @if (issues().length > visibleIssues().length) {
+              <p>Showing the first {{ visibleIssues().length }} of {{ issues().length }} issues.</p>
+            }
+          }
+          @if (uncertainOutcome()) {
+            <p>The quiz may already have been imported. Check for an existing game before importing again. This request has not been retried automatically.</p>
+          }
+        </section>
+      }
+
+      @if (selection(); as selected) {
+        <section class="preview-card" aria-labelledby="preview-heading">
+          <p class="section-label">Quiz preview</p>
+          <h2 id="preview-heading">{{ selected.preview.title }}</h2>
+          <dl class="preview-counts">
+            <div><dt>Rounds</dt><dd>{{ selected.preview.roundCount }}</dd></div>
+            <div><dt>Categories</dt><dd>{{ selected.preview.categoryCount }}</dd></div>
+            <div><dt>Questions</dt><dd>{{ selected.preview.questionCount }}</dd></div>
+          </dl>
+        </section>
+      }
+
+      <button type="button" class="action-button import-button" [disabled]="!canImport()" (click)="importQuiz()">
+        {{ importing() ? 'Importing…' : 'Import Quiz' }}
+      </button>
+      @if (importing()) { <p role="status">Importing your quiz. This can take up to 120 seconds.</p> }
+    }
+  </section>
+</main>
