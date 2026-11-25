@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { GameSettingsComponent } from './game-settings';
 import { SocketService } from '../../../core/services/socket/socker.service';
-import { ThemeService } from '../../../core/services/theme/theme.service';
+import { THEME_NAMES, ThemeName, ThemeService } from '../../../core/services/theme/theme.service';
 import { gameStub, makeState } from '../../../testing/game-fixtures';
 
 describe('Shared game settings', () => {
@@ -18,8 +18,8 @@ describe('Shared game settings', () => {
     TestBed.configureTestingModule({ imports: [GameSettingsComponent], providers: [
       provideRouter([]), { provide: SocketService, useValue: game },
       { provide: ThemeService, useValue: {
-        getThemes: () => ['classic', 'pastel-holiday'], getSavedTheme: () => 'classic',
-        isThemeName: (theme: string) => theme === 'classic' || theme === 'pastel-holiday',
+        getThemes: () => [...THEME_NAMES], getSavedTheme: () => 'classic',
+        isThemeName: (theme: string) => THEME_NAMES.includes(theme as ThemeName),
         setTheme: applyTheme,
       } },
     ] });
@@ -86,5 +86,20 @@ describe('Shared game settings', () => {
     await component.onThemeChange('pastel-holiday');
     expect(fixture.nativeElement.querySelector('select').disabled).toBe(true);
     expect(game.setTheme).not.toHaveBeenCalled();
+  });
+
+  it.each(['olive-garden', 'autumn-glow'] as const)('offers %s and saves it for the current game', async theme => {
+    const select: HTMLSelectElement = fixture.nativeElement.querySelector('select');
+    const option = [...select.options].find(option => option.textContent?.trim() === theme);
+    expect(option).toBeDefined();
+    game.setTheme.mockImplementation(async () => {
+      game.state.set(makeState({ status: 'setup', theme }));
+    });
+    select.value = option!.value;
+    select.dispatchEvent(new Event('change'));
+    await fixture.whenStable();
+    expect(game.setTheme).toHaveBeenCalledExactlyOnceWith(8, theme);
+    expect(applyTheme).toHaveBeenCalledWith(theme);
+    expect(component.selectedTheme()).toBe(theme);
   });
 });

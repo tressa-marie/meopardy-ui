@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
-export type ThemeName = 'classic' | 'pastel-holiday';
+export const THEME_NAMES = ['classic', 'pastel-holiday', 'olive-garden', 'autumn-glow'] as const;
+export type ThemeName = typeof THEME_NAMES[number];
 
 @Injectable({
   providedIn: 'root',
@@ -14,11 +15,11 @@ export class ThemeService {
   }
 
   getThemes(): ThemeName[] {
-    return ['classic', 'pastel-holiday'];
+    return [...THEME_NAMES];
   }
 
   isThemeName(value: string | null): value is ThemeName {
-    return value === 'classic' || value === 'pastel-holiday';
+    return THEME_NAMES.includes(value as ThemeName);
   }
 
   getSavedTheme(): ThemeName {
