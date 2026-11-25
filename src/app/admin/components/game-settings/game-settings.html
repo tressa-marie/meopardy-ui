@@ -1,0 +1,16 @@
+<section class="settings-panel" aria-labelledby="settings-heading">
+  <h2 id="settings-heading">Settings</h2>
+  <div class="theme-card">
+    <label class="section-label" for="theme-select">Theme</label>
+    <select
+      id="theme-select"
+      class="theme-select"
+      [formControl]="themeControl">
+      @for (theme of themes; track theme) {
+        <option [ngValue]="theme">{{ theme }}</option>
+      }
+    </select>
+  </div>
+  @if (changingTheme()) { <p role="status">Saving theme…</p> }
+  @if (errorMessage()) { <p class="settings-error" role="alert">{{ errorMessage() }}</p> }
+</section>

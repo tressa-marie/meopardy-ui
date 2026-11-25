@@ -2,10 +2,12 @@ import { GameBoard } from './board';
 import { Clue } from './clue';
 import { Player } from './player';
 import { SubmittedAnswer } from '../admin/models/submitted-answer';
+import { ThemeName } from '../core/services/theme/theme.service';
 
 export type GamePhase = 'setup' | 'board' | 'clue_open' | 'answering' | 'awaiting_reveal' | 'reveal' | 'finished';
 
 export interface GameState extends GameBoard {
+  theme?: ThemeName;
   status: GamePhase;
   activeRoundId: number | null;
   rounds: { id: number; name: string; categories: GameBoard['categories'] }[];

@@ -1,10 +1,11 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { injectRouteGameId } from '../../../core/routing/game-id';
 import { SocketService } from '../../../core/services/socket/socker.service';
+import { GameSettingsComponent } from '../game-settings/game-settings';
 
 @Component({
-  selector: 'app-player-lobby-component', standalone: true, imports: [RouterLink],
+  selector: 'app-player-lobby-component', standalone: true, imports: [GameSettingsComponent],
   templateUrl: './player-lobby-component.html', styleUrl: './player-lobby-component.scss',
 })
 export class PlayerLobbyComponent {
@@ -12,6 +13,7 @@ export class PlayerLobbyComponent {
   readonly game = inject(SocketService);
   readonly starting = signal(false);
   readonly errorMessage = signal('');
+  readonly changingTheme = signal(false);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -22,7 +24,7 @@ export class PlayerLobbyComponent {
   get players() { return this.game.state()?.players ?? []; }
 
   async startGame(): Promise<void> {
-    if (this.starting() || !this.game.synchronized()) return;
+    if (this.starting() || this.changingTheme() || !this.game.synchronized()) return;
     this.starting.set(true);
     this.errorMessage.set('');
     try {

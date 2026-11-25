@@ -43,4 +43,14 @@ describe('Persistent host grading', () => {
     expect(component.errorMessage()).toBe('Save failed');
     expect(component.gradingIds().size).toBe(0);
   });
+
+  it('retains the shared Settings card below the scores in the right column', () => {
+    const fixture = TestBed.createComponent(AdminAnswerDashboardComponent);
+    fixture.detectChanges();
+    const sidebar: HTMLElement = fixture.nativeElement.querySelector('.dashboard-sidebar');
+    expect(sidebar.children[0].classList).toContain('scoreboard-panel');
+    expect(sidebar.children[1].tagName).toBe('APP-GAME-SETTINGS');
+    expect(sidebar.querySelector('app-game-settings h2')?.textContent).toBe('Settings');
+    expect(sidebar.querySelector('app-game-settings select')).not.toBeNull();
+  });
 });

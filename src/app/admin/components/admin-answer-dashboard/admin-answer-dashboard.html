@@ -92,22 +92,7 @@
         }
       </section>
 
-      <section class="settings-panel" aria-labelledby="settings-heading">
-        <h2 id="settings-heading">Settings</h2>
-        <div class="theme-card">
-          <label class="section-label" for="theme-select">Theme</label>
-          <select
-            id="theme-select"
-            class="theme-select"
-            [ngModel]="selectedTheme()"
-            [disabled]="changingTheme() || !game.synchronized()"
-            (ngModelChange)="onThemeChange($event)">
-            @for (theme of themes; track theme) {
-              <option [ngValue]="theme">{{ theme }}</option>
-            }
-          </select>
-        </div>
-      </section>
+      <app-game-settings [gameId]="gameId" />
     </aside>
   </section>
 </main>

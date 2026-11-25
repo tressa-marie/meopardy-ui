@@ -2,7 +2,6 @@
   <section class="lobby-panel">
     <p class="eyebrow">Admin Lobby</p>
     <h1>Players</h1>
-    <a [routerLink]="['/join-code', gameId]" target="_blank" rel="noopener">Show join code</a>
     @if (errorMessage() || game.error()) {
       <p role="alert">{{ errorMessage() || game.error() }}</p>
     }
@@ -19,7 +18,9 @@
       </ul>
     }
 
-    <button type="button" class="start-button" [disabled]="starting() || !game.synchronized()" (click)="startGame()">
+    <app-game-settings [gameId]="gameId" [disabled]="starting()" (busyChange)="changingTheme.set($event)" />
+
+    <button type="button" class="start-button" [disabled]="starting() || changingTheme() || !game.synchronized()" (click)="startGame()">
       {{ starting() ? 'Starting…' : 'Start Game' }}
     </button>
   </section>
