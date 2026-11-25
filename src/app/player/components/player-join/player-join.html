@@ -1,35 +1,45 @@
 <main class="app-screen app-screen--centered player-join-screen">
-  <section class="join-panel">
-    <h1>{{ gameTitle }}</h1>
+  <div class="join-layout">
+    <aside class="join-qr" aria-labelledby="join-qr-heading">
+      <h2 id="join-qr-heading">Join on your phone</h2>
+      <a class="join-qr-link" [href]="joinPageUrl" aria-label="Open the join page on the hosted site">
+        <img class="join-qr-image" src="images/join-qr.svg" width="224" height="224"
+          alt="QR code for https://jattam.onrender.com/join" />
+      </a>
+      <p>Scan to open the join page.</p>
+    </aside>
+    <section class="join-panel">
+      <h1>{{ gameTitle }}</h1>
 
-    <label class="join-label" for="join-code">Join Code</label>
-    <input
-      id="join-code"
-      class="join-input"
-      type="text"
-      inputmode="text"
-      maxlength="6"
-      placeholder="123456"
-      [value]="joinCode"
-      (input)="onJoinCodeInput($event)" />
-
-    @if (errorMessage) {
-      <p class="join-error" role="alert">{{ errorMessage }}</p>
-    }
-
-    <label class="join-label" for="player-name">Player Name</label>
+      <label class="join-label" for="join-code">Join Code</label>
       <input
-      id="player-name"
-      class="join-input"
-      type="text"
-      inputmode="text"
-      autocomplete="name"
-      maxlength="20"
-      [value]="playerName"
-      (input)="onPlayerNameInput($event)" />
+        id="join-code"
+        class="join-input"
+        type="text"
+        inputmode="text"
+        maxlength="6"
+        placeholder="123456"
+        [value]="joinCode"
+        (input)="onJoinCodeInput($event)" />
 
-    <button type="button" class="join-button" [disabled]="loading" (click)="joinGame()">
-      {{ loading ? 'Joining...' : 'Join' }}
-    </button>
-  </section>
+      @if (errorMessage) {
+        <p class="join-error" role="alert">{{ errorMessage }}</p>
+      }
+
+      <label class="join-label" for="player-name">Player Name</label>
+        <input
+        id="player-name"
+        class="join-input"
+        type="text"
+        inputmode="text"
+        autocomplete="name"
+        maxlength="20"
+        [value]="playerName"
+        (input)="onPlayerNameInput($event)" />
+
+      <button type="button" class="join-button" [disabled]="loading" (click)="joinGame()">
+        {{ loading ? 'Joining...' : 'Join' }}
+      </button>
+    </section>
+  </div>
 </main>
