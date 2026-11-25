@@ -13,7 +13,6 @@ import { PlayerSessionService } from '../../services/player-session.service';
   styleUrl: './player-join.scss',
 })
 export class PlayerJoinComponent {
-  readonly joinPageUrl = 'https://jattam.onrender.com/join';
   readonly gameTitle = 'Meopardy'; // TODO: Get from config
   private readonly playerService = inject(PlayerService);
   private readonly changeDetector = inject(ChangeDetectorRef);

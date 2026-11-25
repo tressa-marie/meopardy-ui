@@ -12,53 +12,6 @@
   gap: clamp(1.25rem, 3vw, 2.5rem);
 }
 
-.join-qr {
-  display: none;
-  min-width: 0;
-  text-align: center;
-}
-
-.join-qr h2 {
-  margin: 0 0 1rem;
-  color: var(--theme-text-primary);
-  font-size: 1.25rem;
-}
-
-.join-qr p {
-  margin: 1rem 0 0;
-  color: var(--theme-text-secondary);
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
-
-.join-qr-link {
-  display: block;
-  border-radius: 0.75rem;
-  box-shadow: var(--theme-shadow-md);
-}
-
-.join-qr-link:focus-visible {
-  outline: 3px solid var(--theme-text-accent);
-  outline-offset: 4px;
-}
-
-.join-qr-image {
-  display: block;
-  width: 100%;
-  height: auto;
-  background: #fff;
-  border-radius: 0.75rem;
-}
-
-@media (min-width: 768px) {
-  .join-layout {
-    width: min(100%, 58rem);
-    grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr);
-  }
-
-  .join-qr { display: block; }
-}
-
 .join-panel {
   box-sizing: border-box;
   width: 100%;

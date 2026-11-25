@@ -29,6 +29,18 @@ describe('Join-code screen', () => {
     expect(navigate).not.toHaveBeenCalled();
   });
 
+  it('shows the QR code beside the join-code card and keeps its destination at /join', () => {
+    const fixture = TestBed.createComponent(JoinGameComponent);
+    fixture.detectChanges();
+    const qr: HTMLElement = fixture.nativeElement.querySelector('.join-qr');
+    const card: HTMLElement = fixture.nativeElement.querySelector('.join-card');
+    expect(qr.nextElementSibling?.classList).toContain('join-content');
+    expect(card.contains(qr)).toBe(false);
+    expect(qr.querySelector('a')?.getAttribute('href')).toBe('https://jattam.onrender.com/join');
+    expect(qr.querySelector('img')?.getAttribute('src')).toBe('images/join-qr.svg');
+    expect(card.textContent).toContain('ABC123');
+  });
+
   it('opens the host board when the admin starts the game on another screen', () => {
     const fixture = TestBed.createComponent(JoinGameComponent);
     fixture.detectChanges();

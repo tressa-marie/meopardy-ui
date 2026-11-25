@@ -10,6 +10,7 @@ import { injectRouteGameId } from '../../../core/routing/game-id';
   templateUrl: './join-game.component.html', styleUrl: './join-game.component.scss',
 })
 export class JoinGameComponent implements OnInit {
+  readonly joinPageUrl = 'https://jattam.onrender.com/join';
   readonly gameId = injectRouteGameId();
   readonly game = inject(SocketService);
   joinCode = '';

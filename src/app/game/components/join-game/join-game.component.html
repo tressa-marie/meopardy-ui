@@ -12,11 +12,22 @@
 
 @if (joinCode) {
   <main class="app-screen app-screen--centered join-screen">
-    <p class="eyebrow">Join the game</p>
-    <h1>Meopardy</h1>
-    <section class="join-card" aria-label="Join code">
-      <p class="label">Join Code</p>
-      <p class="code">{{ joinCode }}</p>
-    </section>
+    <div class="join-layout">
+      <aside class="join-qr" aria-labelledby="join-qr-heading">
+        <h2 id="join-qr-heading">Join on your phone</h2>
+        <a class="join-qr-link" [href]="joinPageUrl" aria-label="Open the join page on the hosted site">
+          <img class="join-qr-image" src="images/join-qr.svg" width="224" height="224"
+            alt="QR code for https://jattam.onrender.com/join" />
+        </a>
+      </aside>
+      <section class="join-content">
+        <p class="eyebrow">Join the game</p>
+        <h1>Meopardy</h1>
+        <section class="join-card" aria-label="Join code">
+          <p class="label">Join Code</p>
+          <p class="code">{{ joinCode }}</p>
+        </section>
+      </section>
+    </div>
   </main>
 }
